@@ -1,8 +1,8 @@
-﻿//
-//AutoBlinkforSD.cs
-//SDユニティちゃん用オート目パチスクリプト
+﻿//SDユニティちゃん用オート目パチスクリプト
 //2014/12/10 N.Kobayashi
-//
+//2017/4/2
+//Modified by Chao
+//自动眨眼
 using UnityEngine;
 using System.Collections;
 using System.Security.Policy;

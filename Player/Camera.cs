@@ -1,12 +1,11 @@
 ﻿//2017/2/21
 //by Chao
-
+//摄像机自动跟随
 using UnityEngine;
 using System.Collections;
 
 public class Camera : MonoBehaviour
 {
-    private GameManager gm;
     public Transform pos;   //摄像机要跟随的人物
     private float smoothTime = 0.1f;  //摄像机平滑移动的时间
     public float distance = -12f;
@@ -15,7 +14,7 @@ public class Camera : MonoBehaviour
     private bool currentFaceDir;
     private void Start()
     {
-        gm = GetComponent<GameManager>();
+
     }
     void Update()
     {

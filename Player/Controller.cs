@@ -7,16 +7,21 @@ using System.Collections;
 public class Controller : MonoBehaviour{
 
     public Player player;
-
+    private AnimeManager am;
     private float moveSpeed;
     private float runSpeed;
     private bool nextJump = false;
+    //遇敌后退
     private  bool leftEncounting = false;
     private  bool isEncounting = false;
-    private float defEncountingBackSpeed = 10;
+    private float defEncountingBackSpeed = 8;
     private float encountingBackSpeed = 0;
     private float encountingAcceleration = 20;
     private float accelerateSmooth = 2.5f;
+    //后坐力参数
+    private float defFiringBackSpeed = 10;
+    private float firingBackSpeed = 0;
+    private float firingAcceleration = 35;
 
     private float jumpV_x = 0;
     private float jumpHaxis = 0;
@@ -49,36 +54,29 @@ public class Controller : MonoBehaviour{
         col.height = orgColHight;
         col.center = orgVectColCenter;
     }
-
-
     //位置方向参数
-    static Vector3 currentPosition;
-    static Vector3 privousPosition;
+    private Vector3 currentPosition;
+    private Vector3 privousPosition;
 
     public bool hasAxisInput = true;
     private static float Haxis=0f;
 
     public GameObject charaMesh;
-    public GameObject gun;
+    public Gun gun;
+    public Transform lookAtPos;
+    private Transform launchPos;
     Quaternion frontRotation = Quaternion.Euler(0f, 115f, 0f);    //欧拉角到四元数变换  def:115&-115
     Quaternion backRotation = Quaternion.Euler(0f, -115f, 0f);
-    Quaternion gunFrontRotation = Quaternion.Euler(0f, 0, 0f);
-    Quaternion gunBackRotation = Quaternion.Euler(0f, 180, 0f);
+    Vector3 currentLookAtPos;
+    private bool pFaceRight=true;
 
-    //获取动画状态
-    private Animator anim;
-    private AnimatorStateInfo currentBaseState;
-    static int standingState = Animator.StringToHash("Base Layer.Standing");//将参数转为hash
-    static int walkingState = Animator.StringToHash("Base Layer.Walking");
-    static int runningState = Animator.StringToHash("Base Layer.Running");
-    static int jump0State = Animator.StringToHash("Base Layer.Jumping0");
-    static int jump1State = Animator.StringToHash("Base Layer.Jumping1");
-    static int jump2State = Animator.StringToHash("Base Layer.Jumping2");
 
     //Start-----------------------------------------------------------------------------------------------------------
     void Start()
     {
         player = transform.GetComponent<Player>();
+        am = GetComponent<AnimeManager>();
+        launchPos= gun.launchPos.transform;
 
         jumpVelocity = player.jumpVelocity;
         moveSpeed = player.moveSpeed;
@@ -89,9 +87,9 @@ public class Controller : MonoBehaviour{
         col = GetComponent<CapsuleCollider>();
         orgColHight = col.height;
         orgVectColCenter = col.center;
-        anim = transform.FindChild("Misaki").GetComponent<Animator>();
         currentPosition = transform.position;
         encountingBackSpeed = defEncountingBackSpeed;
+        firingBackSpeed = defFiringBackSpeed;
         //状态参数初始化
         player.isDroping = true;
 
@@ -100,7 +98,7 @@ public class Controller : MonoBehaviour{
     //FixedUpdate-----------------------------------------------------------------------------------------------------------
     private void FixedUpdate()
     {
-        currentBaseState = anim.GetCurrentAnimatorStateInfo(0);//更新动画状态
+
 
         //游戏状态判断
         if (currentPosition.y <= -30f)
@@ -139,16 +137,37 @@ public class Controller : MonoBehaviour{
         if (Haxis > 0f)                              //面向判定&改向
         {
             charaMesh.transform.rotation = frontRotation;
-            gun.transform.rotation = gunFrontRotation;
             player.faceRight = true;
         }
 
         if (Haxis <0f)                              //面向判定&改向
         {
             charaMesh.transform.rotation = backRotation;
-            gun.transform.rotation = gunBackRotation;
             player.faceRight = false;
         }
+        if (pFaceRight != player.faceRight)//每次转向执行一次,注视点X轴，导弹发射时的引导位置X轴反向
+        {
+            Vector3 localPos= new Vector3(-lookAtPos.localPosition.x, lookAtPos.localPosition.y,lookAtPos.localPosition.z);
+            lookAtPos.localPosition = localPos;//注视点
+            Vector3 launchPosLocal = new Vector3(-launchPos.localPosition.x, launchPos.localPosition.y, launchPos.localPosition.z);
+            launchPos.localPosition = launchPosLocal;//导弹引导位置
+            Vector3 gunLocalScale = new Vector3(-gun.transform.localScale.x, gun.transform.localScale.y, gun.transform.localScale.z);
+            gun.transform.localScale = gunLocalScale;//枪
+            gun.gunScale.x *= -1f;//Gun沿X轴镜像
+            Vector3 gunPosVessel = gun.transform.localPosition;
+            gunPosVessel.x *= -1f;
+            gun.transform.localPosition = gunPosVessel;
+
+            Vector3 handPosVessel = gun.rightHandPos.localPosition;//交换左右手在武器上的IK Position与Rotation
+            gun.rightHandPos.localPosition = gun.leftHandPos.localPosition;
+            gun.leftHandPos.localPosition = handPosVessel;
+            Quaternion handRotVessel = gun.rightHandPos.localRotation;
+            gun.rightHandPos.localRotation = gun.leftHandPos.localRotation;
+            gun.leftHandPos.localRotation = handRotVessel;
+            gun.faceRight *= -1f;//Gun反向判定更新
+
+        }
+        pFaceRight = player.faceRight;
         //走—停判定
         if (player.isGround)
         {
@@ -191,9 +210,9 @@ public class Controller : MonoBehaviour{
             }
         //跳跃判定
         if (Input.GetButtonDown("Jump") &&nextJump&&!player.isDroping&&!inDropColdTime)            //不能在落地前跳跃
-            if (currentBaseState.fullPathHash == walkingState|| 
-                currentBaseState.fullPathHash == runningState||
-                currentBaseState.fullPathHash == standingState)//不能在动画完成前跳跃
+            if (am.currentBaseState.fullPathHash == AnimeManager.walkingState ||
+                am.currentBaseState.fullPathHash == AnimeManager.runningState ||
+                am.currentBaseState.fullPathHash == AnimeManager.standingState)//不能在动画完成前跳跃
             {
                 nextJump = false;//落地前无法再次起跳
                 yPosBeforeJump = currentPosition.y;//储存起跳前的Y值
@@ -265,6 +284,26 @@ public class Controller : MonoBehaviour{
             {
                 isEncounting = false;
                 encountingBackSpeed = defEncountingBackSpeed;
+            }
+            transform.position = currentPosition;//更新位置
+        }
+        //后坐力
+        if (player.isFiring&&!player.backStay)
+        {
+            firingBackSpeed = firingBackSpeed - firingAcceleration * Time.deltaTime;
+            if (player.faceRight)
+            {
+                currentPosition.x = privousPosition.x - Time.deltaTime * firingBackSpeed;
+            }
+            else
+            {
+                currentPosition.x = privousPosition.x + Time.deltaTime * firingBackSpeed;
+            }
+            if (firingBackSpeed < 0.05)
+            {
+                isEncounting = false;
+                player.backStay = true;
+                firingBackSpeed = defFiringBackSpeed;
             }
             transform.position = currentPosition;//更新位置
         }

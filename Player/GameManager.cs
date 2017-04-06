@@ -20,7 +20,13 @@ public class GameManager : MonoBehaviour
         player = GameObject.Find("Player").GetComponent<Player>();
 
     }
-
+    private void Update()
+    {
+        if (Input.GetButtonDown("Debug"))
+        {
+            Debug.Log("Debug");
+        }
+    }
     void LateUpdate()
     {
         if (player.died)
@@ -28,6 +34,15 @@ public class GameManager : MonoBehaviour
         if (gameOver)
             SceneManager.LoadScene("Begin");
     }
+    //Bool转换Float
+    public static float BoolToFloat(bool boolean)
+    {
+        if (boolean)
+            return 1f;
+        else
+            return 0f;
+    }
+
 
 
 }

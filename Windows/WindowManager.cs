@@ -1,5 +1,6 @@
 ﻿//2017/2/09
 //by Chao
+//管理游戏中的全局变量/方法，更新游戏的进行状态
 using UnityEngine;
 using System.Collections;
 

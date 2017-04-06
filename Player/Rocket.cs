@@ -17,7 +17,13 @@ public class Rocket : MonoBehaviour {
         yield return new WaitForSeconds(2f);
         Destroy(this.gameObject);
     }
-	void Start () {
+    private IEnumerator HitTimer()
+    {
+        Debug.Log("RocketLaunch!!");
+        yield return new WaitForSeconds(0.05f);
+        Destroy(this.gameObject);
+    }
+    void Start () {
         StartCoroutine(LifeTimer());
         //Vector3.Cross(new Vector3(Gun.force * Player.faceRight, 0,0) , Gun.rocketFocus
     }
@@ -28,8 +34,9 @@ public class Rocket : MonoBehaviour {
             enemy = collision.transform.GetComponent<Enemy>();
             Debug.Log("RocketHit!");
             enemy.HP -= (damage-enemy.defence);
+            enemy.isEncounting = true;
             Destroy(this.gameObject);
-            
+
         }
     }
 }

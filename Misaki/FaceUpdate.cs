@@ -3,9 +3,6 @@
 //Modified By Chao
 using UnityEngine;
 using System.Collections;
-
-namespace UnityChan
-{
 	public class FaceUpdate : MonoBehaviour
 	{
 		public AnimationClip[] animations;
@@ -18,13 +15,17 @@ namespace UnityChan
         //攻击时的表情持续时间
         private float atkEmoTime=2f;
         private float firEmoTime=2f;
-        private void atkEmo()
+        public void atkEmo()
         {
-
+            ChangeFace("angry");
         }
-        private void firEmo()
+        public void firEmo()
         {
-
+            ChangeFace("scold"); 
+        }
+        public void norEmo()
+        {
+            ChangeFace("default");
         }
 
 
@@ -37,7 +38,7 @@ namespace UnityChan
 
 		void Update ()
 		{
-			if (Input.GetMouseButton (0)) {
+            if (Input.GetButtonDown("Debug")) {
 				current = 1;
 			} else if (!isKeepFace) {
 				current = Mathf.Lerp (current, 0, delayWeight);
@@ -67,7 +68,7 @@ namespace UnityChan
 
 		void ChangeFace (string str)
 		{
-			isKeepFace = true;
+			//isKeepFace = true;
 			current = 1;
 			anim.CrossFade (str, 0);
 		}
@@ -92,4 +93,3 @@ namespace UnityChan
             }
         }
     }
-}

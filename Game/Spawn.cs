@@ -1,5 +1,6 @@
 ﻿//2017/3/29
 //by Chao
+//控制重生点的范围，重生位置确定，重生敌人种类以及数量。
 using UnityEngine;
 using System.Collections;
 
@@ -52,18 +53,21 @@ public class Spawn : MonoBehaviour {
                 if (count < maxEnemy)
                 {
                     int j=0;
+                    int canSpawnNum = 0;
                     for (int i = 0; i < spCount; i++)//遍历所有出生点子对象找出能够重生的点，并在这些点中随机选择一个作为出生点
-                    {
+                    {   
                         if (spawnPoint[i].canSpawn)
                         {
                             spawnPos[j++] = spawnPoint[i].transform.position;
+                            canSpawnNum++;
                             Debug.Log("SP" + spawnPoint[i].canSpawn.ToString());
                         }
                     }
+                    if (canSpawnNum <= 0)//若无重生点能重生则Return
+                        return;
                     int k = Random.Range(0, j);
 
                     int randomEnemy = Random.Range(0, variousOfEnemy);//随机重生该出生点所有种类敌人中的任意一个
-                    float spawnPosX = Random.Range(leftLimit, rightLimit)-leftLimit;
                     GameObject newEnemy=Instantiate(enemy[randomEnemy], spawnPos[k] + new Vector3(0, enemy[randomEnemy].GetComponent<Enemy>().centerYPos, 0), Quaternion.identity) as GameObject;
                     newEnemy.GetComponent<Enemy>().spawnPoint=this;
                     Debug.Log("Enemy Spawned!");

@@ -7,6 +7,7 @@ public class Player : MonoBehaviour {
     //持有武器
     public Weapon weapon;
     public Gun gun;
+    public FaceUpdate emo;//表情管理器
     //角色数值
     public int maxHP = 100;
     public int maxMP = 30;
@@ -34,8 +35,6 @@ public class Player : MonoBehaviour {
     public float jumpMultiple = 1.15f;//跳跃-高跳系数 
     public float moveSpeed = 6;     //6
     public float rumMultiple = 1.6f; //移动-奔跑系数1.6
-    //角色动画状态
-    private Animator anim;
     //private AnimatorStateInfo currentBaseState;
     //角色体力状态
     public bool isDamaged = false;
@@ -56,6 +55,7 @@ public class Player : MonoBehaviour {
     //角色攻击状态
     public bool isAttacking = false;
     public bool isFiring = false;
+    public bool backStay = false;//Firing状态中保持后坐力站稳
     public float attackSpeed = 0.05f;
     public float fireSpeed = 0.1f;
     public bool isDefancing = false;
@@ -67,8 +67,6 @@ public class Player : MonoBehaviour {
     void Start()
     {
         controller = GetComponent<Controller>();
-        anim = transform.FindChild("Misaki").GetComponent<Animator>();
-
         died = false;
         HP = maxHP;
         MP = maxMP;
@@ -83,14 +81,6 @@ public class Player : MonoBehaviour {
     }
     private void FixedUpdate()
     {
-        //if (!anim.IsInTransition(0))
-        //将游戏管理器中角色状态值赋予动画组件
-        //currentBaseState = anim.GetCurrentAnimatorStateInfo(0);//更新动画状态
-        anim.SetBool("isStanding", isStanding);
-        anim.SetBool("isRunning", isRunning);
-        anim.SetBool("isWalking", isWalking);
-        anim.SetBool("isJumping", isJumping);
-
     }
     void Update()
     {
@@ -106,7 +96,6 @@ public class Player : MonoBehaviour {
         {
             isDying = false;
             controller.enabled = true;
-            anim.SetBool("isDying", isDying);//更新动画，下同
         }
 
 
@@ -136,28 +125,23 @@ public class Player : MonoBehaviour {
     {
         upgraded = true;
         previousLV = Level;
-        anim.SetBool("isUpgrade",upgraded);
         yield return new WaitForSeconds(1f);
         ++Level;
         Debug.Log("Upgrade!");
         upgraded = false;
-        anim.SetBool("isUpgrade",upgraded);
     }
     private IEnumerator Damaged()
     {
         Debug.Log("Damaged!"+HP.ToString());
         isDamaged = true;
-        anim.SetBool("isDamaged", isDamaged);
         yield return new WaitForSeconds(0.2f);
         isDamaged = false;
-        anim.SetBool("isDamaged",isDamaged);
     }
     private IEnumerator Die()
     {
         Debug.Log("Now DYING!!!");
         isDying = true;
         controller.enabled = false;
-        anim.SetBool("isDying",isDying);
         yield return new WaitForSeconds(3f+Level*0.1f);
         if (isDying)
         {
@@ -170,13 +154,11 @@ public class Player : MonoBehaviour {
     {
         Debug.Log("Attack");
         isAttacking = true;
-        anim.SetBool("isAttacking", isAttacking);
-        stay = true;
+        emo.atkEmo();
         yield return new WaitForSeconds(attackSpeed);
         Debug.Log("Attack End");
         isAttacking = false;
-        anim.SetBool("isAttacking", isAttacking);
-        stay = false;
+        emo.norEmo();
         //yield return StartCoroutine(InnerUnityCoroutine());协程嵌套
     }
     //远程导弹攻击
@@ -185,13 +167,12 @@ public class Player : MonoBehaviour {
         Debug.Log("Fire");
         gun.Fire();
         isFiring = true;
-        anim.SetBool("isFiring", isFiring);
-        stay = true;
+        emo.firEmo();
         yield return new WaitForSeconds(fireSpeed);
         Debug.Log("Fire End");
         isFiring = false;
-        anim.SetBool("isFiring", isFiring);
-        stay = false;
+        emo.norEmo();
+        backStay = false;
     }
     //防御
     private void Defence()
