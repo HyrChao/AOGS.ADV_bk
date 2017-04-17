@@ -1,5 +1,8 @@
 # Demo
-using part of scripts of UnityChan
+By Chao
+using part of UnityChan:
+『SDこはくちゃんズ・小碓学園夏＆冬制服モデル』Ver 1.01
+2016/01/29 Unity Technologies Japan
 ###### ===========Gif laodinng...=============
 
 Jump
