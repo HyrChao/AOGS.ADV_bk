@@ -6,7 +6,7 @@ Jump
 
 [![](https://github.com/HyrChao/AOGS.ADV/blob/master/demo/GIF.gif?raw=true)](https://github.com/HyrChao/AOGS.ADV/blob/master/demo/GIF.gif?raw=true)
 
-Fire
+Fire(IK Animation)
 
 [![](https://github.com/HyrChao/AOGS.ADV/blob/master/demo/GIF2.gif?raw=true)](https://github.com/HyrChao/AOGS.ADV/blob/master/demo/GIF2.gif?raw=true)
 
