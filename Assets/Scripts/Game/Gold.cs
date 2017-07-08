@@ -18,7 +18,7 @@ public class Gold : Item{
 	}
     override protected void Picked()
     {
-        player.AddGold(dropGold);
+        player.AddGold(goldAmount);
     }
 
 }

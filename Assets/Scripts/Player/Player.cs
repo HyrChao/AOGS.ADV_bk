@@ -124,7 +124,7 @@ public class Player : MonoBehaviour {
         {
             StartCoroutine(Fire());
         }
-        if (EXP > lv[Level]&&!upgraded)
+        if (EXP()>lv[Level]&&!upgraded)
             StartCoroutine(Upgrade());
         previousHp = HP;
     }
