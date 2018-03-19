@@ -10,9 +10,9 @@ public class AnimeManager : MonoBehaviour {
     //获取动画状态
     private Animator anim;
     private Player player;
-    private Gun gun;
     private IKLookAt IKLook;
     public AnimatorStateInfo currentBaseState;
+
     static public int standingState = Animator.StringToHash("Base Layer.Standing");//将参数转为hash
     static public int walkingState = Animator.StringToHash("Base Layer.Walking");
     static public int runningState = Animator.StringToHash("Base Layer.Running");
@@ -27,7 +27,6 @@ public class AnimeManager : MonoBehaviour {
     {
         anim = transform.FindChild("Misaki").GetComponent<Animator>();
         player = GetComponent<Player>();
-        gun= transform.FindChild("Gun").GetComponent<Gun>();
         IKLook = transform.FindChild("Misaki").GetComponent<IKLookAt>();
     }
     private void FixedUpdate()
@@ -48,10 +47,6 @@ public class AnimeManager : MonoBehaviour {
     }
     void Update ()
     {
-        if (player.isFiring)
-            gun.laod = 1;
-        else
-            gun.laod = 0;
 
         if (anim == null)
             return;
@@ -61,7 +56,6 @@ public class AnimeManager : MonoBehaviour {
         }
         else
             IKLook.ikActive = false;
-
 
     }
     //IK更新
