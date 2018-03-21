@@ -12,14 +12,17 @@ public class Controller : MonoBehaviour {
     private float moveSpeed = 8.0f;
     Quaternion frontRotation = Quaternion.Euler(0f, 115f, 0f);    //欧拉角到四元数变换  def:115&-115
     Quaternion backRotation = Quaternion.Euler(0f, 245f, 0f);
+    float playerGravityCenter = 0.4057051f;
     bool grounded = false;
     bool facingRight = false;
+
+    bool debug;
 
     private float runSpeed = 0f;
     public float jumpForce = 50000f;
 
     private Rigidbody rb; // Reference to rigidbody
-    private LayerMask environmentLayerMask; // Layer for raycast to hit
+    private int environmentLayerMask; // Layer for raycast to hit
     private float lastDistance; // The last distance between the player and the environment (directly down) 
 
     // Use this for initialization
@@ -28,9 +31,11 @@ public class Controller : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         rb.useGravity = true;
         charaMesh = GameObject.Find("PlayerMesh");
-        environmentLayerMask = LayerMask.GetMask("Environment");
+        environmentLayerMask = LayerMask.GetMask("Ground");
         player = transform.GetComponent<Player>();
         //am = GetComponent<AnimeManager>();
+
+        debug = false;
     }
 
     // Use this for initialization
@@ -47,17 +52,27 @@ public class Controller : MonoBehaviour {
         else
             moveAxis = 0;
 
-        if (moveAxis > 0f)                              //面向判定&改向
+        if (moveAxis != 0)
         {
-            charaMesh.transform.rotation = frontRotation;
-            facingRight = true;
+            player.isWalking = true;
+
+            if (moveAxis > 0f)                              //面向判定&改向
+            {
+                charaMesh.transform.rotation = frontRotation;
+                facingRight = true;
+            }
+
+            if (moveAxis < 0f)                              //面向判定&改向
+            {
+                charaMesh.transform.rotation = backRotation;
+                facingRight = false;
+            }
+        }
+        else
+        {
+            player.isWalking = false;
         }
 
-        if (moveAxis < 0f)                              //面向判定&改向
-        {
-            charaMesh.transform.rotation = backRotation;
-            facingRight = false;
-        }
     }
 
     private void LateUpdate()
@@ -66,18 +81,28 @@ public class Controller : MonoBehaviour {
         {
             this.transform.Translate(Vector3.right * Time.deltaTime * moveSpeed * moveAxis); //角色移动实现
         }
+        else
+        {
+            player.isFalling = true;
+        }
     }
 
     void FixedUpdate()
     {
         // Check if the user is grounded
-        if (rb.velocity.z <= 0)
+        if (rb.velocity.y < 0)
         {
-            bool hit = Physics.Raycast(rb.position - new Vector3(0f, 0f, 0.5f), Vector3.down, 0.2f, environmentLayerMask);
+            bool hit = Physics.Raycast(transform.position - new Vector3(0f, 0.2f, 0f), new Vector3(0f, -1f, 0f), 0.4f, environmentLayerMask);
             if (hit)
             {
                 grounded = true;
             }
+            else
+            {
+                grounded = false;
+            }
+
+            Debug.Log(grounded.ToString());
         }
         else
         {
@@ -97,7 +122,7 @@ public class Controller : MonoBehaviour {
         {
             return;
         }
-        rb.AddForce(new Vector3(0, 0, force));
+        rb.AddForce(new Vector3(0, force, 0));
     }
 	
 }
