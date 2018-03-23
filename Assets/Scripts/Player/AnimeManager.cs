@@ -10,7 +10,7 @@ public class AnimeManager : MonoBehaviour {
     //获取动画状态
     private Animator anim;
     private Player player;
-    private IKLookAt IKLook;
+    //private IKLookAt IKLook;
     public AnimatorStateInfo currentBaseState;
 
     static public int standingState = Animator.StringToHash("Base Layer.Standing");//将参数转为hash
@@ -25,9 +25,9 @@ public class AnimeManager : MonoBehaviour {
 
     void Start ()
     {
-        anim = transform.FindChild("Misaki").GetComponent<Animator>();
+        anim = transform.FindChild("PlayerMesh").GetComponent<Animator>();
         player = GetComponent<Player>();
-        IKLook = transform.FindChild("Misaki").GetComponent<IKLookAt>();
+        //IKLook = transform.FindChild("PlayerMesh").GetComponent<IKLookAt>();
     }
     private void FixedUpdate()
     {
@@ -35,27 +35,19 @@ public class AnimeManager : MonoBehaviour {
         //将游戏管理器中角色状态值赋予动画组件
         //currentBaseState = anim.GetCurrentAnimatorStateInfo(0);//更新动画状态
         currentBaseState = anim.GetCurrentAnimatorStateInfo(0);//更新动画状态
-        anim.SetBool("isUpgrade", player.upgraded);
-        anim.SetBool("isDamaged", player.isDamaged);
-        anim.SetBool("isDying", player.isDying);
-        anim.SetBool("isAttacking", player.isAttacking);
-        anim.SetBool("isFiring", player.isFiring);
-        anim.SetBool("isStanding", player.isStanding);
-        anim.SetBool("isRunning", player.isRunning);
-        anim.SetBool("isWalking", player.isWalking);
-        anim.SetBool("isJumping", player.isJumping);
+        //anim.SetBool("isUpgrade", player.state.upgraded);
+        anim.SetBool("isDamaged", player.state.damaged);
+        anim.SetBool("isDying", player.state.dying);
+        anim.SetBool("isAttacking", player.state.attacking);
+        anim.SetBool("isFiring", player.state.firing);
+        anim.SetBool("isStanding", player.state.standing);
+        anim.SetBool("isRunning", player.state.running);
+        anim.SetBool("isWalking", player.state.walking);
+        anim.SetBool("isJumping", player.state.jumping);
     }
     void Update ()
     {
 
-        if (anim == null)
-            return;
-        if (player.isFiring || player.isAttacking)
-        {
-            IKLook.ikActive = true;
-        }
-        else
-            IKLook.ikActive = false;
 
     }
     //IK更新

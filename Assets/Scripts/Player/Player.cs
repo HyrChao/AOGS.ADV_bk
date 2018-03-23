@@ -6,16 +6,19 @@ using System.Collections;
 
 public struct PlayerState
 {
-    public bool Standing;
-    public bool Staying;
-    public bool Walking;
-    public bool Running;
-    public bool Jumping;
-    public bool Falling;
-    public bool Droping;
-    public bool Climbing;
-    public bool Attacking;
-    public bool Firing;
+    public bool standing;
+    public bool staying;
+    public bool walking;
+    public bool running;
+    public bool jumping;
+    public bool falling;
+    public bool droping;
+    public bool climbing;
+    public bool attacking;
+    public bool firing;
+    public bool damaged;
+    public bool dying;
+    public bool died;
 }
 
 public class Player : MonoBehaviour {
@@ -23,11 +26,26 @@ public class Player : MonoBehaviour {
     //持有武器
     public Weapon weapon;
     public Gun gun;
-    public FaceUpdate emo;//表情管理器
+    //public FaceUpdate emo;//表情管理器
 
     //
     public PlayerState state;
-
+    public void ClearState()
+    {
+        state.standing =false;
+        state.staying = false;
+        state.walking = false;
+        state.running = false;
+        state.jumping = false;
+        state.falling = false;
+        state.droping = false;
+        state.climbing = false;
+        state.attacking = false;
+        state.firing = false;
+        state.damaged = false;
+        state.dying = false;
+        state.died = false;
+    }
     //角色数值
     public int maxHP = 100;
     public int maxMP = 30;
@@ -36,22 +54,43 @@ public class Player : MonoBehaviour {
     public int HP;
     public int MP;
     public int SP;
+
     //经验技能
-    private int Level=0;
+    private int lv = 1;
     static private int maxLV=100;
-    private int previousLV = 0;
     private int exp=0;
-    public int EXP()
+    private int[] expLv = new int[maxLV];//每级所需经验
+
+    //每级经验初始化
+    private void SetupExpForEveryLevel()
+    {
+        expLv[1] = 30;
+
+        for (int i = 1; i < maxLV; ++i)
+        {
+            expLv[i] = expLv[i - 1] + 50 + 25 * (int)(i * 0.5);
+        }
+    }
+    public int GetTotalEXP()
     {
         return exp;
     }
+
+    public int GetRemainEXP()
+    {
+        int remainExp = expLv[lv + 1] - exp;
+        return remainExp;
+    }
+
     public void AddEXP(int _exp)
     {
         exp += _exp;
     }
-    private int[] lv=new int[maxLV];//每级所需经验
-    public bool upgraded = false;
+
+
+    //统计
     private int enemyKilled = 0;
+
     //金钱&点数
     private int gold=0;
     public int Gold()
@@ -64,129 +103,89 @@ public class Player : MonoBehaviour {
     }
     //持有物品
 
-    int previousHp;
-
     public float jumpSpeed = 3;       //delta time优化，影响起跳-落地时间
     public float jumpVelocity = 6f;  //跳跃初速度，影响自由落体最大高度
     public float jumpMultiple = 1.15f;//跳跃-高跳系数 
     public float moveSpeed = 6;     //6
     public float rumMultiple = 1.6f; //移动-奔跑系数1.6
     //private AnimatorStateInfo currentBaseState;
-    //角色体力状态
-    public bool isDamaged = false;
-    public bool isDying = false;
-    public bool died = false;
 
     public float attackSpeed = 0.05f;
     public float fireSpeed = 0.1f;
     //角色运动状态
 
-    private Controller controller;
     public bool faceRight = true;
-    public bool stay = false;
-
     //Awake
-    private void Awake()
+    public void ResetPlayer()
     {
-
-    }
-
-    //Start
-    void Start()
-    {
-        controller = GetComponent<Controller>();
-        died = false;
+        ClearState();
         HP = maxHP;
         MP = maxMP;
         SP = maxSP;
-        //每级经验初始化
-        lv[0] = 30;
-        for (int i = 1; i < maxLV; i++)
-        {
-            lv[i] = lv[i - 1] + 50 + 25 * (int)(i * 0.5);
-        }
-
     }
-    private void FixedUpdate()
+
+    private void Awake()
     {
+        SetupExpForEveryLevel();
     }
-    void Update()
+
+    //Start
+    private void Start()
     {
-        if (HP < previousHp&&!isDamaged)
-        {
-            StartCoroutine(Damaged());
-        }
-        if (HP <= 0&&!isDying)
-        {
-            StartCoroutine(Die());
-        }
-        if (HP > 0)
-        {
-            isDying = false;
-            controller.enabled = true;
-        }
+        ResetPlayer();
+    }
 
-
-        if (Input.GetButtonDown("Attack") && !state.Attacking)
+    private void Update()
+    {
+        if (Input.GetButtonDown("Attack") && !state.attacking)
         {
             StartCoroutine(Attack());
         }
-        if (Input.GetButtonDown("Fire") && !state.Firing)
+        if (Input.GetButtonDown("Fire") && !state.firing)
         {
             StartCoroutine(Fire());
         }
-        if (EXP()>lv[Level]&&!upgraded)
-            StartCoroutine(Upgrade());
-        previousHp = HP;
     }
-    //使用HP药水
-    private void UseHpPotion()
+
+    private void FixedUpdate()
     {
 
     }
-    //使用MP药水
-    private void UseMpPotion()
-    {
 
-    }
-    private IEnumerator Upgrade()
+    //回复HP
+    private void RecoverHP(int reHP)
     {
-        upgraded = true;
-        previousLV = Level;
-        yield return new WaitForSeconds(1f);
-        ++Level;
-        Debug.Log("Upgrade!");
-        upgraded = false;
+        HP += reHP;
+        if (HP > maxHP) ;
+        HP = maxHP;
     }
-    private IEnumerator Damaged()
+    //回复MP
+    private void RecoverMP(int reMP)
+    {
+        MP += reMP;
+        if (HP > maxHP);
+        MP = maxMP;
+    }
+    public void Upgrade()
+    {
+        lv++;
+    }
+    private void Damaged()
     {
         Debug.Log("Damaged!"+HP.ToString());
-        isDamaged = true;
-        yield return new WaitForSeconds(0.2f);
-        isDamaged = false;
-    }
-    private IEnumerator Die()
-    {
-        Debug.Log("Now DYING!!!");
-        isDying = true;
-        controller.enabled = false;
-        yield return new WaitForSeconds(3f+Level*0.1f);
-        if (isDying)
-        {
-            Debug.Log("Died!T T");
-            died = true;
-        }
+        state.damaged = true;
+        state.damaged = false;
     }
     //攻击
     private IEnumerator Attack()
     {
         Debug.Log("Attack");
-        state.Attacking = true;
-        emo.atkEmo();
+        state.attacking = true;
+        //emo.atkEmo();
         yield return new WaitForSeconds(attackSpeed);
         Debug.Log("Attack End");
-        state.Attacking = false;
-        emo.norEmo();
+        state.attacking = false;
+        //emo.norEmo();
         //yield return StartCoroutine(InnerUnityCoroutine());协程嵌套
     }
     //远程导弹攻击
@@ -194,12 +193,12 @@ public class Player : MonoBehaviour {
     {
         Debug.Log("Fire");
         gun.Fire();
-        state.Firing = true;
-        emo.firEmo();
+        state.firing = true;
+        //emo.firEmo();
         yield return new WaitForSeconds(fireSpeed);
         Debug.Log("Fire End");
-        state.Firing = false;
-        emo.norEmo();
+        state.firing = false;
+        //emo.norEmo();
     }
     //防御
     private void Defence()
@@ -211,5 +210,4 @@ public class Player : MonoBehaviour {
         enemyKilled++;
         Debug.Log("Kill Total" + enemyKilled.ToString());
     }
-
 }

@@ -1,19 +1,20 @@
-﻿//UnityChan
+﻿//
 // Mecanim.IkLookAt
 // 使用時には、AnimatorのBase LayerのIK PassをONにすること.
-//2017/4/2
-//Modified By Chao
+//
 using UnityEngine;
 using System.Collections;
-//namespace UnityChan
-//{
+
+
+namespace UnityChan
+{
 
 //	[RequireComponent(typeof(Animator))]  
 
 	public class IKLookAt : MonoBehaviour {
 
         private Animator avator;
-        //private MeshRenderer target = null;
+        private MeshRenderer target = null;
 		
 		public bool ikActive = false;
 		public Transform lookAtObj = null;
@@ -25,13 +26,18 @@ using System.Collections;
 		public float clampWeight = 0.5f;
         public bool isGUI = true;
 
+
+
+
+
+		// Use this for initialization
 		void Start () {
             avator = GetComponent<Animator>();
-            //if (lookAtObj != null)
-            //{
-            //    target = lookAtObj.GetComponentInParent<MeshRenderer>();
-            //    target.enabled = false;
-            //}
+            if (lookAtObj != null)
+            {
+                target = lookAtObj.GetComponentInParent<MeshRenderer>();
+                target.enabled = false;
+            }
             
 		}
 
@@ -48,43 +54,43 @@ using System.Collections;
 
 
 		void OnAnimatorIK(int layorIndex)
-		{
-        if (avator)
-        {
-            if (ikActive)
-            {
-                avator.SetLookAtWeight(lookAtWeight, bodyWeight, headWeight, eyesWeight, clampWeight);
-                if (lookAtObj != null)
-                {
-                    avator.SetLookAtPosition(lookAtObj.position);
-                }
-                else
-                {
-                    avator.SetLookAtWeight(0.0f);
-                }
-            }
-            else
-            {
-                avator.SetLookAtWeight(0.0f);
-            }
-        }
-    }
+		{		
+			if(avator)
+			{
+				if(ikActive)
+				{
+                    avator.SetLookAtWeight(lookAtWeight,bodyWeight,headWeight,eyesWeight,clampWeight);
+                    if (lookAtObj != null)
+                    {
+                        target.enabled = true;
+                        avator.SetLookAtPosition(lookAtObj.position);
+                    }
+                    else
+                    {
+                        avator.SetLookAtWeight(0.0f);
+                    }
+				}
+				else
+				{
+					avator.SetLookAtWeight(0.0f);
+				}
+			}
+		}
 		
 		void Update () 
 		{
 			if(avator)
 			{
-
-				//if(!ikActive)
-				//{
-    //                if (lookAtObj != null)
-				//	{
-    //                    target.enabled = false;
-    //                    //Targetを消した位置に再び出したい場合には、下の行をコメントアウトする.
-    //                    //lookAtObj.position = avator.bodyPosition + avator.bodyRotation * new Vector3(0,0.5f,1);
-				//	}				
-				//}
+				if(!ikActive)
+				{
+                    if (lookAtObj != null)
+					{
+                        target.enabled = false;
+                        //Targetを消した位置に再び出したい場合には、下の行をコメントアウトする.
+                        //lookAtObj.position = avator.bodyPosition + avator.bodyRotation * new Vector3(0,0.5f,1);
+					}				
+				}
 			}		
 		}   		  
 	}
-//}
+}

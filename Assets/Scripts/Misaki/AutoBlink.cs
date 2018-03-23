@@ -1,26 +1,21 @@
 ﻿//
-//AutoBlinkforSD.cs
-//SDユニティちゃん用オート目パチスクリプト
-//2014/12/10 N.Kobayashi
+//AutoBlink.cs
+//オート目パチスクリプト
+//2014/06/23 N.Kobayashi
 //
 using UnityEngine;
 using System.Collections;
-using System.Security.Policy;
 
 namespace UnityChan
 {
-	public class AutoBlinkforSD : MonoBehaviour
+	public class AutoBlink : MonoBehaviour
 	{
 
 		public bool isActive = true;				//オート目パチ有効
-		public SkinnedMeshRenderer ref_face;	//_faceへの参照
+		public SkinnedMeshRenderer ref_SMR_EYE_DEF;	//EYE_DEFへの参照
+		public SkinnedMeshRenderer ref_SMR_EL_DEF;	//EL_DEFへの参照
 		public float ratio_Close = 85.0f;			//閉じ目ブレンドシェイプ比率
 		public float ratio_HalfClose = 20.0f;		//半閉じ目ブレンドシェイプ比率
-		public int index_EYE_blk = 0;			//目パチ用モーフのindex
-		public int index_EYE_sml = 1;			//目パチさせたくないモーフのindex
-		public int index_EYE_dmg = 15;			//目パチさせたくないモーフのindex
-
-
 		[HideInInspector]
 		public float
 			ratio_Open = 0.0f;
@@ -108,18 +103,21 @@ namespace UnityChan
 		}
 
 		void SetCloseEyes ()
-		{	
-			ref_face.SetBlendShapeWeight (index_EYE_blk, ratio_Close);
+		{
+			ref_SMR_EYE_DEF.SetBlendShapeWeight (6, ratio_Close);
+			ref_SMR_EL_DEF.SetBlendShapeWeight (6, ratio_Close);
 		}
 
 		void SetHalfCloseEyes ()
 		{
-			ref_face.SetBlendShapeWeight (index_EYE_blk, ratio_HalfClose);
+			ref_SMR_EYE_DEF.SetBlendShapeWeight (6, ratio_HalfClose);
+			ref_SMR_EL_DEF.SetBlendShapeWeight (6, ratio_HalfClose);
 		}
 
 		void SetOpenEyes ()
 		{
-			ref_face.SetBlendShapeWeight (index_EYE_blk, ratio_Open);
+			ref_SMR_EYE_DEF.SetBlendShapeWeight (6, ratio_Open);
+			ref_SMR_EL_DEF.SetBlendShapeWeight (6, ratio_Open);
 		}
 		
 		// ランダム判定用関数
@@ -131,10 +129,7 @@ namespace UnityChan
 				float _seed = Random.Range (0.0f, 1.0f);
 				if (!isBlink) {
 					if (_seed > threshold) {
-						//目パチさせたくないモーフの時だけ飛ばす.
-						if(ref_face.GetBlendShapeWeight(index_EYE_sml)==0.0f && ref_face.GetBlendShapeWeight(index_EYE_dmg)==0.0f){
-							isBlink = true;
-						}
+						isBlink = true;
 					}
 				}
 				// 次の判定までインターバルを置く

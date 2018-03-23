@@ -1,25 +1,31 @@
-﻿using System.Collections;
+﻿//2018/03/23
+//by Chao
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Controller : MonoBehaviour {
 
-    public Player player;
+    private bool debug;
+
+    private Player player;
     //private AnimeManager am;
-    public GameObject charaMesh;
+    private GameObject charaMesh;
+    private CapsuleCollider col;
 
     private float moveAxis = 0f;
     private float moveSpeed = 8.0f;
     Quaternion frontRotation = Quaternion.Euler(0f, 115f, 0f);    //欧拉角到四元数变换  def:115&-115
     Quaternion backRotation = Quaternion.Euler(0f, 245f, 0f);
-    float playerGravityCenter = 0.4057051f;
+    float gravityCenterHeight = 0f;
+    float groundRaycastDist = 3f;
     bool grounded = false;
     bool facingRight = false;
 
-    bool debug;
 
     private float runSpeed = 0f;
-    public float jumpForce = 50000f;
+    public float jumpForce = 50f;
 
     private Rigidbody rb; // Reference to rigidbody
     private int environmentLayerMask; // Layer for raycast to hit
@@ -33,8 +39,9 @@ public class Controller : MonoBehaviour {
         charaMesh = GameObject.Find("PlayerMesh");
         environmentLayerMask = LayerMask.GetMask("Ground");
         player = transform.GetComponent<Player>();
+        col = GetComponent<CapsuleCollider>();
         //am = GetComponent<AnimeManager>();
-
+        gravityCenterHeight = col.height / 2;
         debug = false;
     }
 
@@ -47,14 +54,11 @@ public class Controller : MonoBehaviour {
     private void Update()
     {
         //获取输入
-        if (!player.stay)
-            moveAxis = Input.GetAxis("Horizontal");
-        else
-            moveAxis = 0;
+        moveAxis = Input.GetAxis("Horizontal");
 
         if (moveAxis != 0)
         {
-            player.isWalking = true;
+            player.state.walking = true;
 
             if (moveAxis > 0f)                              //面向判定&改向
             {
@@ -70,43 +74,37 @@ public class Controller : MonoBehaviour {
         }
         else
         {
-            player.isWalking = false;
+            player.state.walking = false;
         }
-
+        debug = grounded;
+        //Debug.Log(grounded.ToString());
+        Debug.Log(debug.ToString());
+        //Debug.Log(Vector3.down.ToString());
     }
 
     private void LateUpdate()
     {
         if (grounded)
         {
-            this.transform.Translate(Vector3.right * Time.deltaTime * moveSpeed * moveAxis); //角色移动实现
-        }
-        else
-        {
-            player.isFalling = true;
+            transform.Translate(Vector3.right * Time.deltaTime * moveSpeed * moveAxis); //角色移动实现
         }
     }
 
     void FixedUpdate()
     {
         // Check if the user is grounded
-        if (rb.velocity.y < 0)
+        bool hit = Physics.Raycast(transform.position - new Vector3(0, gravityCenterHeight - groundRaycastDist, 0), new Vector3(0f, -1f, 0f), groundRaycastDist, environmentLayerMask);
+        if (hit)
         {
-            bool hit = Physics.Raycast(transform.position - new Vector3(0f, 0.2f, 0f), new Vector3(0f, -1f, 0f), 0.4f, environmentLayerMask);
-            if (hit)
-            {
-                grounded = true;
-            }
-            else
-            {
-                grounded = false;
-            }
-
-            Debug.Log(grounded.ToString());
+            grounded = true;
         }
         else
         {
             grounded = false;
+            if (rb.velocity.y < 0)
+            {
+                player.state.falling = true;
+            }
         }
 
         float jumpAxis = Input.GetAxisRaw("Jump");
@@ -122,6 +120,7 @@ public class Controller : MonoBehaviour {
         {
             return;
         }
+
         rb.AddForce(new Vector3(0, force, 0));
     }
 	

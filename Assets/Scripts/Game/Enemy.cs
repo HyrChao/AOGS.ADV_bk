@@ -143,7 +143,7 @@ public class Enemy : MonoBehaviour {
         if (collision.gameObject.tag == "Player")
         {
             if(player!=null)
-                if (!player.isDamaged && !inMoveHitColdTime)
+                if (!player.state.damaged&& !inMoveHitColdTime)
                 {
                     StartCoroutine(MoveHitColdTime());
                     MoveDamage();
