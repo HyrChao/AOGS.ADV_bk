@@ -1,13 +1,33 @@
 ﻿//2017/3/30
 //by Chao
+
 using UnityEngine;
 using System.Collections;
 
+public struct PlayerState
+{
+    public bool Standing;
+    public bool Staying;
+    public bool Walking;
+    public bool Running;
+    public bool Jumping;
+    public bool Falling;
+    public bool Droping;
+    public bool Climbing;
+    public bool Attacking;
+    public bool Firing;
+}
+
 public class Player : MonoBehaviour {
+
     //持有武器
     public Weapon weapon;
     public Gun gun;
     public FaceUpdate emo;//表情管理器
+
+    //
+    public PlayerState state;
+
     //角色数值
     public int maxHP = 100;
     public int maxMP = 30;
@@ -56,29 +76,20 @@ public class Player : MonoBehaviour {
     public bool isDamaged = false;
     public bool isDying = false;
     public bool died = false;
+
+    public float attackSpeed = 0.05f;
+    public float fireSpeed = 0.1f;
     //角色运动状态
+
     private Controller controller;
     public bool faceRight = true;
     public bool stay = false;
-    public bool isStanding = false;
-    public bool isWalking = false;
-    public bool isClimbing = false;
-    public bool isJumping = false;
-    public bool isRunning = false;
-    public bool isFalling = false;
-    public bool isDroping = false;
 
-    //角色攻击状态
-    public bool isAttacking = false;
-    public bool isFiring = false;
-    public bool backStay = false;//Firing状态中保持后坐力站稳
-    public float attackSpeed = 0.05f;
-    public float fireSpeed = 0.1f;
-    public bool isDefancing = false;
+    //Awake
+    private void Awake()
+    {
 
-    //角色位置状态
-    public bool isGround = false;
-    public bool isOnStair = false;
+    }
 
     //Start
     void Start()
@@ -116,11 +127,11 @@ public class Player : MonoBehaviour {
         }
 
 
-        if (Input.GetButtonDown("Attack") && !isAttacking)
+        if (Input.GetButtonDown("Attack") && !state.Attacking)
         {
             StartCoroutine(Attack());
         }
-        if (Input.GetButtonDown("Fire") && !isFiring)
+        if (Input.GetButtonDown("Fire") && !state.Firing)
         {
             StartCoroutine(Fire());
         }
@@ -170,11 +181,11 @@ public class Player : MonoBehaviour {
     private IEnumerator Attack()
     {
         Debug.Log("Attack");
-        isAttacking = true;
+        state.Attacking = true;
         emo.atkEmo();
         yield return new WaitForSeconds(attackSpeed);
         Debug.Log("Attack End");
-        isAttacking = false;
+        state.Attacking = false;
         emo.norEmo();
         //yield return StartCoroutine(InnerUnityCoroutine());协程嵌套
     }
@@ -183,13 +194,12 @@ public class Player : MonoBehaviour {
     {
         Debug.Log("Fire");
         gun.Fire();
-        isFiring = true;
+        state.Firing = true;
         emo.firEmo();
         yield return new WaitForSeconds(fireSpeed);
         Debug.Log("Fire End");
-        isFiring = false;
+        state.Firing = false;
         emo.norEmo();
-        backStay = false;
     }
     //防御
     private void Defence()
