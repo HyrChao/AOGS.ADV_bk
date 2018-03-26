@@ -34,7 +34,8 @@ public class AnimeManager : MonoBehaviour {
         //if (!anim.IsInTransition(0))
         //将游戏管理器中角色状态值赋予动画组件
         //currentBaseState = anim.GetCurrentAnimatorStateInfo(0);//更新动画状态
-        currentBaseState = anim.GetCurrentAnimatorStateInfo(0);//更新动画状态
+
+
         //anim.SetBool("isUpgrade", player.state.upgraded);
         //anim.SetBool("isDamaged", player.state.damaged);
         //anim.SetBool("isDying", player.state.dying);
@@ -49,6 +50,14 @@ public class AnimeManager : MonoBehaviour {
     {
 
 
+    }
+    private void LateUpdate()
+    {
+        currentBaseState = anim.GetCurrentAnimatorStateInfo(0);//更新动画状态
+
+        anim.SetBool("isStanding", player.state.Equals(PlayerState.Idle));
+        anim.SetBool("isWalking", player.state.Equals(PlayerState.Walking));
+        anim.SetBool("isRunning", player.state.Equals(PlayerState.Running));
     }
     //IK更新
     void OnAnimatorIK(int layerIndex)

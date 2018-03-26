@@ -66,7 +66,7 @@ public class Controller : MonoBehaviour {
         moveAxisZ = Input.GetAxis("Vertical");
         jumpAxis = Input.GetAxisRaw("Jump");
 
-        if (Input.GetButtonDown("Run"))
+        if (Input.GetButton("Run"))
         {
             speed = runSpeed;
         }
@@ -106,20 +106,13 @@ public class Controller : MonoBehaviour {
 
         transform.Translate(moveDir * Time.deltaTime);  //移动实现
 
-        debug = grounded;
-        Debug.Log(grounded.ToString());
-        //Debug.Log(debug.ToString());
-
-    }
-
-    private void LateUpdate()
-    {
+        //Refresh player states
         if (grounded)
         {
             player.state = PlayerState.Idle;
             if (moveDir != Vector3.zero)
                 player.state = PlayerState.Walking;
-            if (speed == runSpeed)
+            if (speed > moveSpeed)
                 player.state = PlayerState.Running;
         }
         else
@@ -129,6 +122,16 @@ public class Controller : MonoBehaviour {
             else
                 player.state = PlayerState.Jumping;
         }
+
+        debug = grounded;
+        Debug.Log(player.state.ToString());
+        //Debug.Log(debug.ToString());
+
+    }
+
+    private void LateUpdate()
+    {
+
 
 
 
