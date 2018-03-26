@@ -36,14 +36,14 @@ public class AnimeManager : MonoBehaviour {
         //currentBaseState = anim.GetCurrentAnimatorStateInfo(0);//更新动画状态
         currentBaseState = anim.GetCurrentAnimatorStateInfo(0);//更新动画状态
         //anim.SetBool("isUpgrade", player.state.upgraded);
-        anim.SetBool("isDamaged", player.state.damaged);
-        anim.SetBool("isDying", player.state.dying);
-        anim.SetBool("isAttacking", player.state.attacking);
-        anim.SetBool("isFiring", player.state.firing);
-        anim.SetBool("isStanding", player.state.standing);
-        anim.SetBool("isRunning", player.state.running);
-        anim.SetBool("isWalking", player.state.walking);
-        anim.SetBool("isJumping", player.state.jumping);
+        //anim.SetBool("isDamaged", player.state.damaged);
+        //anim.SetBool("isDying", player.state.dying);
+        //anim.SetBool("isAttacking", player.state.attacking);
+        //anim.SetBool("isFiring", player.state.firing);
+        //anim.SetBool("isStanding", player.state.standing);
+        //anim.SetBool("isRunning", player.state.running);
+        //anim.SetBool("isWalking", player.state.walking);
+        //anim.SetBool("isJumping", player.state.jumping);
     }
     void Update ()
     {

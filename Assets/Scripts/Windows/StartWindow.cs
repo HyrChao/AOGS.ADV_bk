@@ -52,7 +52,7 @@ public class StartWindow : GenericWindow {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        if(GameManager.gameOver)
+        if(AO.GameOver)
             windowManager.Open(1);
 
     }

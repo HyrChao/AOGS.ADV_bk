@@ -4,22 +4,22 @@
 using UnityEngine;
 using System.Collections;
 
-public struct PlayerState
+public enum PlayerState
 {
-    public bool standing;
-    public bool staying;
-    public bool walking;
-    public bool running;
-    public bool jumping;
-    public bool falling;
-    public bool droping;
-    public bool climbing;
-    public bool attacking;
-    public bool firing;
-    public bool damaged;
-    public bool dying;
-    public bool died;
+    None,
+    Idle,
+    Walking,
+    Running,
+    Jumping,
+    Falling,
+    Flying,
+    Climbing,
+    Attacking,
+    Firing,
+    Damaging,
+    Dying,
 }
+
 
 public class Player : MonoBehaviour {
 
@@ -27,25 +27,7 @@ public class Player : MonoBehaviour {
     public Weapon weapon;
     public Gun gun;
     //public FaceUpdate emo;//表情管理器
-
-    //
-    public PlayerState state;
-    public void ClearState()
-    {
-        state.standing =false;
-        state.staying = false;
-        state.walking = false;
-        state.running = false;
-        state.jumping = false;
-        state.falling = false;
-        state.droping = false;
-        state.climbing = false;
-        state.attacking = false;
-        state.firing = false;
-        state.damaged = false;
-        state.dying = false;
-        state.died = false;
-    }
+    public PlayerState state = PlayerState.None;
     //角色数值
     public int maxHP = 100;
     public int maxMP = 30;
@@ -118,7 +100,6 @@ public class Player : MonoBehaviour {
     //Awake
     public void ResetPlayer()
     {
-        ClearState();
         HP = maxHP;
         MP = maxMP;
         SP = maxSP;
@@ -137,14 +118,7 @@ public class Player : MonoBehaviour {
 
     private void Update()
     {
-        if (Input.GetButtonDown("Attack") && !state.attacking)
-        {
-            StartCoroutine(Attack());
-        }
-        if (Input.GetButtonDown("Fire") && !state.firing)
-        {
-            StartCoroutine(Fire());
-        }
+
     }
 
     private void FixedUpdate()
@@ -173,33 +147,31 @@ public class Player : MonoBehaviour {
     private void Damaged()
     {
         Debug.Log("Damaged!"+HP.ToString());
-        state.damaged = true;
-        state.damaged = false;
     }
     //攻击
-    private IEnumerator Attack()
-    {
-        Debug.Log("Attack");
-        state.attacking = true;
-        //emo.atkEmo();
-        yield return new WaitForSeconds(attackSpeed);
-        Debug.Log("Attack End");
-        state.attacking = false;
-        //emo.norEmo();
-        //yield return StartCoroutine(InnerUnityCoroutine());协程嵌套
-    }
+    //private IEnumerator Attack()
+    //{
+    //    Debug.Log("Attack");
+    //    state.attacking = true;
+    //    //emo.atkEmo();
+    //    yield return new WaitForSeconds(attackSpeed);
+    //    Debug.Log("Attack End");
+    //    state.attacking = false;
+    //    //emo.norEmo();
+    //    //yield return StartCoroutine(InnerUnityCoroutine());协程嵌套
+    //}
     //远程导弹攻击
-    private IEnumerator Fire()
-    {
-        Debug.Log("Fire");
-        gun.Fire();
-        state.firing = true;
-        //emo.firEmo();
-        yield return new WaitForSeconds(fireSpeed);
-        Debug.Log("Fire End");
-        state.firing = false;
-        //emo.norEmo();
-    }
+    //private IEnumerator Fire()
+    //{
+    //    Debug.Log("Fire");
+    //    gun.Fire();
+    //    state.firing = true;
+    //    //emo.firEmo();
+    //    yield return new WaitForSeconds(fireSpeed);
+    //    Debug.Log("Fire End");
+    //    state.firing = false;
+    //    //emo.norEmo();
+    //}
     //防御
     private void Defence()
     {

@@ -5,35 +5,83 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
 
+public enum Mode
+{
+    _2D,
+    _3D
+}
+
+static class AO
+{
+
+    static private Mode mode = Mode._2D;
+    public static Mode Mode
+    {
+        get
+        {
+            return mode;
+        }
+        set
+        {
+            mode = value;
+        }
+    }
+
+    private static bool gameOver = false;
+    public static bool GameOver
+    {
+        get
+        {
+            return gameOver;
+        }
+        set
+        {
+            gameOver = value;
+        }
+    }
+
+    private static float gravity = 10f;
+    public static float Gravity
+    {
+        get
+        {
+            return gravity;
+        }
+        set
+        {
+            gravity = value;
+            //Change gravity once upgrated value
+            Physics.gravity = new Vector3(0f, -gravity, 0f);
+        }
+    }
+
+
+}
+
 public class GameManager : MonoBehaviour
 {
-    public Player player;
+    private Player player;
     private Controller controller;
     private AnimeManager am;
 
-    //世界物理参数
-    public static float gravity = 9.8f;
-
     //游戏状态
-    public static bool gameOver = false;
+
 
     private void Awake()
     {
+
         controller = GameObject.Find("Player").GetComponent<Controller>();
+        player = GameObject.Find("Player").GetComponent<Player>();
+
     }
 
     void Start()
     {
-        gameOver = false;
-        player = GameObject.Find("Player").GetComponent<Player>();
+        AO.GameOver = false;
 
     }
     private void Update()
     {
-        if (Input.GetButtonDown("Debug"))
-        {
-            Debug.Log("Debug");
-        }
 
         if (player.HP <= 0)
         {
@@ -49,10 +97,7 @@ public class GameManager : MonoBehaviour
     }
     void LateUpdate()
     {
-        if (player.state.died)
-            gameOver = true;
-        if (gameOver)
-            SceneManager.LoadScene("Begin");
+
     }
     //Bool转换Float
     public static float BoolToFloat(bool boolean)
@@ -65,8 +110,11 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        player.state.died = true;
+        player.state = PlayerState.Dying;
         controller.enabled = false;
+        
+        SceneManager.LoadScene("Begin");
+
     }
 
 
