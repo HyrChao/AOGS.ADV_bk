@@ -8,61 +8,59 @@ using System.Collections;
 public class AnimeManager : MonoBehaviour {
 
     //获取动画状态
-    private Animator anim;
+    private Animator animator;
     private Player player;
     //private IKLookAt IKLook;
     public AnimatorStateInfo currentBaseState;
 
-    static public int standingState = Animator.StringToHash("Base Layer.Standing");//将参数转为hash
-    static public int walkingState = Animator.StringToHash("Base Layer.Walking");
-    static public int runningState = Animator.StringToHash("Base Layer.Running");
-    static public int jump0State = Animator.StringToHash("Base Layer.Jumping0");
-    static public int jump1State = Animator.StringToHash("Base Layer.Jumping1");
-    static public int jump2State = Animator.StringToHash("Base Layer.Jumping2");
+    //static public int standingState = Animator.StringToHash("Base Layer.Standing");//将参数转为hash
+    //static public int walkingState = Animator.StringToHash("Base Layer.Walking");
+    //static public int runningState = Animator.StringToHash("Base Layer.Running");
+    //static public int jump0State = Animator.StringToHash("Base Layer.Jumping0");
+    //static public int jump1State = Animator.StringToHash("Base Layer.Jumping1");
+    //static public int jump2State = Animator.StringToHash("Base Layer.Jumping2");
     
-
-
-
     void Start ()
     {
-        anim = transform.FindChild("PlayerMesh").GetComponent<Animator>();
+        animator = transform.FindChild("PlayerMesh").GetComponent<Animator>();
         player = GetComponent<Player>();
         //IKLook = transform.FindChild("PlayerMesh").GetComponent<IKLookAt>();
     }
     private void FixedUpdate()
     {
-        //if (!anim.IsInTransition(0))
+        animator.SetInteger("State", player.state.GetHashCode());
+
+        //if (!animator.IsInTransition(0))
         //将游戏管理器中角色状态值赋予动画组件
-        //currentBaseState = anim.GetCurrentAnimatorStateInfo(0);//更新动画状态
+        //currentBaseState = animator.GetCurrentAnimatorStateInfo(0);//更新动画状态
 
 
-        //anim.SetBool("isUpgrade", player.state.upgraded);
-        //anim.SetBool("isDamaged", player.state.damaged);
-        //anim.SetBool("isDying", player.state.dying);
-        //anim.SetBool("isAttacking", player.state.attacking);
-        //anim.SetBool("isFiring", player.state.firing);
-        //anim.SetBool("isStanding", player.state.standing);
-        //anim.SetBool("isRunning", player.state.running);
-        //anim.SetBool("isWalking", player.state.walking);
-        //anim.SetBool("isJumping", player.state.jumping);
+        //animator.SetBool("isUpgrade", player.state.upgraded);
+        //animator.SetBool("isDamaged", player.state.damaged);
+        //animator.SetBool("isDying", player.state.dying);
+        //animator.SetBool("isAttacking", player.state.attacking);
+        //animator.SetBool("isFiring", player.state.firing);
+        //animator.SetBool("isStanding", player.state.standing);
+        //animator.SetBool("isRunning", player.state.running);
+        //animator.SetBool("isWalking", player.state.walking);
+        //animator.SetBool("isJumping", player.state.jumping);
     }
     void Update ()
     {
-
-
+        if (player.state.GetHashCode()==4)
+            animator.SetTrigger("Jump");
+        if (AO.GameOver)
+            animator.SetTrigger("Die");
     }
     private void LateUpdate()
     {
-        currentBaseState = anim.GetCurrentAnimatorStateInfo(0);//更新动画状态
-
-        anim.SetBool("isStanding", player.state.Equals(PlayerState.Idle));
-        anim.SetBool("isWalking", player.state.Equals(PlayerState.Walking));
-        anim.SetBool("isRunning", player.state.Equals(PlayerState.Running));
+        //currentBaseState = animator.GetCurrentAnimatorStateInfo(0);//更新动画状态
     }
+
     //IK更新
     void OnAnimatorIK(int layerIndex)
     {
-        Debug.Log("OnAnimatorIK");
+        //Debug.Log("OnAnimatorIK");
         //if (layerIndex == 0)
         //{
         //    if (gun != null)
@@ -77,17 +75,17 @@ public class AnimeManager : MonoBehaviour {
 
         //    if (gun.leftHandPos != null)
         //    {
-        //        anim.SetIKPosition(AvatarIKGoal.LeftHand, gun.leftHandPos.position);//左手IKposition
-        //        anim.SetIKRotation(AvatarIKGoal.LeftHand, gun.leftHandPos.rotation);
-        //        anim.SetIKPositionWeight(AvatarIKGoal.LeftHand, gun.laod);
-        //        anim.SetIKRotationWeight(AvatarIKGoal.LeftHand, gun.laod);
+        //        animator.SetIKPosition(AvatarIKGoal.LeftHand, gun.leftHandPos.position);//左手IKposition
+        //        animator.SetIKRotation(AvatarIKGoal.LeftHand, gun.leftHandPos.rotation);
+        //        animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, gun.laod);
+        //        animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, gun.laod);
         //    }
         //    if (gun.rightHandPos != null)
         //    {
-        //        anim.SetIKPosition(AvatarIKGoal.RightHand, gun.rightHandPos.position);//左手IKposition
-        //        anim.SetIKRotation(AvatarIKGoal.RightHand, gun.rightHandPos.rotation);
-        //        anim.SetIKPositionWeight(AvatarIKGoal.RightHand, gun.laod);
-        //        anim.SetIKRotationWeight(AvatarIKGoal.RightHand, gun.laod);
+        //        animator.SetIKPosition(AvatarIKGoal.RightHand, gun.rightHandPos.position);//左手IKposition
+        //        animator.SetIKRotation(AvatarIKGoal.RightHand, gun.rightHandPos.rotation);
+        //        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, gun.laod);
+        //        animator.SetIKRotationWeight(AvatarIKGoal.RightHand, gun.laod);
         //    }
         //}
     }

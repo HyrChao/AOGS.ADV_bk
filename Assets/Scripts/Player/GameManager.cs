@@ -64,14 +64,12 @@ public class GameManager : MonoBehaviour
     private Controller controller;
     private AnimeManager am;
 
-    //游戏状态
-
-
     private void Awake()
     {
 
         controller = GameObject.Find("Player").GetComponent<Controller>();
         player = GameObject.Find("Player").GetComponent<Player>();
+        am = GameObject.Find("Player").GetComponent<AnimeManager>();
 
     }
 
@@ -112,9 +110,7 @@ public class GameManager : MonoBehaviour
     {
         player.state = PlayerState.Dying;
         controller.enabled = false;
-        
         SceneManager.LoadScene("Begin");
-
     }
 
 

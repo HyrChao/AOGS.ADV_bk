@@ -7,37 +7,44 @@ using UnityEngine;
 
 public class Controller : MonoBehaviour {
 
+    //Debug
     private bool debug;
 
+    //Referances
     private Player player;
-    //private AnimeManager am;
     private GameObject charaMesh;
     private CapsuleCollider col;
     private GameManager gm;
+    private Rigidbody rb;
 
+    //Store axis value
     private float moveAxisX = 0f;
     private float moveAxisZ = 0f;
-    private float jumpAxis = 0f;
 
+    //Parameters for movement
     private float acceleration = 10f;
     private float speed = 10f;
-    private float moveSpeed = 10f;
+    private float moveSpeed = 6f;
     private float runSpeed;
     private float speedMulti = 1.8f;
-    private float jumpForce = 12f;
-    private Vector3 moveDir = Vector3.zero;
-
     Quaternion frontRotation = Quaternion.Euler(0f, 115f, 0f);    //欧拉角到四元数变换  def:115&-115
     Quaternion backRotation = Quaternion.Euler(0f, 245f, 0f);
 
+    //Parameters for jumping
+    private int jumpPower = 0;
+    private bool jumpJudging = false;
+    private int jumpHeldFrame = 0; //Frames used to check how long jump key player hold down
+    private float jumpForce = 8f;
+    private bool canJump = false;
+    private Vector3 moveDir = Vector3.zero;
+
+    //Parameters for ground check
     private int environmentLayerMask; // Layer for raycast to hit
     private float gravityCenterHeight = 0f;
     private float groundRaycastDist = 3f;
-    private float groundRaycastLapse = -0.5f;
+    private float groundRaycastLapse = 0f;
     private bool grounded = false;
     private bool facingRight = false;
-
-    private Rigidbody rb; // Reference to rigidbody
 
     // Use this for initialization
     void Awake()
@@ -61,10 +68,18 @@ public class Controller : MonoBehaviour {
     // Update is called once per frame for physics
     private void Update()
     {
-        //获取输入
+        //Get player input
         moveAxisX = Input.GetAxis("Horizontal");
         moveAxisZ = Input.GetAxis("Vertical");
-        jumpAxis = Input.GetAxisRaw("Jump");
+
+        if (Input.GetButton("Jump"))
+        {
+            jumpJudging = false;
+            ++jumpHeldFrame;
+        }
+            
+        else
+            jumpHeldFrame = 0;
 
         if (Input.GetButton("Run"))
         {
@@ -75,7 +90,7 @@ public class Controller : MonoBehaviour {
             speed = moveSpeed;
         }
 
-        moveDir = new Vector3(moveAxisX, 0f, moveAxisZ);
+        moveDir.Set(moveAxisX, 0f, moveAxisZ);
         moveDir = transform.TransformDirection(moveDir);
         //moveDir.y = 0;
         moveDir *= speed;
@@ -104,27 +119,22 @@ public class Controller : MonoBehaviour {
 
         }
 
-        transform.Translate(moveDir * Time.deltaTime);  //移动实现
+        //Movement
+        transform.Translate(moveDir * Time.deltaTime);  
 
-        //Refresh player states
-        if (grounded)
+        //Jump
+        if (jumpAxis > 0 && grounded && canJump)
         {
-            player.state = PlayerState.Idle;
-            if (moveDir != Vector3.zero)
-                player.state = PlayerState.Walking;
-            if (speed > moveSpeed)
-                player.state = PlayerState.Running;
+            //Jump(jumpForce*10000);
+            if (jumpAxis < 0.1)
+                jumpAxis = 0.1f;
+            Jump(jumpForce * 10000f * Time.deltaTime);
         }
-        else
-        {
-            if (rb.velocity.y <= 0)
-                player.state = PlayerState.Falling;
-            else
-                player.state = PlayerState.Jumping;
-        }
+
+
 
         debug = grounded;
-        Debug.Log(player.state.ToString());
+        Debug.Log(grounded);
         //Debug.Log(debug.ToString());
 
     }
@@ -137,7 +147,7 @@ public class Controller : MonoBehaviour {
 
         //if (grounded)
         //{
-        //    transform.Translate(Vector3.right * Time.deltaTime * moveSpeed * moveAxis); //角色移动实现
+        //    transform.Translate(Vector3.right * Time.deltaTime * moveSpeed * moveAxis); 
         //}
     }
 
@@ -154,11 +164,31 @@ public class Controller : MonoBehaviour {
             grounded = false;
         }
 
-        if (jumpAxis > 0 && grounded && rb.velocity.y >= 0)
+        //Refresh player states
+        if (grounded)
         {
-            //Jump(jumpForce*10000);
-            Jump(jumpForce*10000f * Time.deltaTime);
+            player.state = PlayerState.Idle;
+            if (moveDir != Vector3.zero)
+            {
+                player.state = PlayerState.Walking;
+                if (speed > moveSpeed)
+                    player.state = PlayerState.Running;
+            }
+            if (rb.velocity.y == 0)
+                canJump = true;
         }
+        else
+        {
+            if (rb.velocity.y <= 0)
+                player.state = PlayerState.Falling;
+            else
+            {
+                player.state = PlayerState.Jumping;
+                canJump = false;
+            }
+
+        }
+
     }
 
     void Jump(float force)
