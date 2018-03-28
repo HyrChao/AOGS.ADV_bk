@@ -55,6 +55,16 @@ static class AO
         }
     }
 
+    public static GameManager GetGameManager()
+    {
+        GameManager gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+        if (gm != null)
+        {
+            return gm;
+        }
+        else
+            return null;
+    }
 
 }
 

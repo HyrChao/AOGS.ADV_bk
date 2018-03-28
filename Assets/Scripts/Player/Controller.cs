@@ -55,7 +55,7 @@ public class Controller : MonoBehaviour {
         environmentLayerMask = LayerMask.GetMask("Ground");
         col = GetComponent<CapsuleCollider>();
         //am = GetComponent<AnimeManager>();
-        gravityCenterHeight = col.height / 2;
+        gravityCenterHeight = col.height/2;
         debug = false;
     }
 
@@ -155,7 +155,7 @@ public class Controller : MonoBehaviour {
 
 
         debug = grounded;
-        Debug.Log(grounded);
+        //Debug.Log(grounded);
         //Debug.Log(debug.ToString());
 
     }

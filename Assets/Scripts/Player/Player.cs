@@ -104,7 +104,7 @@ public class Player : MonoBehaviour {
 
     private void Update()
     {
-        if (Input.GetKeyDown("Fire"))
+        if (Input.GetButtonDown("Fire"))
             Fire();
     }
 
@@ -112,8 +112,6 @@ public class Player : MonoBehaviour {
     {
 
     }
-
-
 
     //回复HP
     private void RecoverHP(int reHP)

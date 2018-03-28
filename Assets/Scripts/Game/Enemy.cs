@@ -12,15 +12,13 @@ public class Enemy : MonoBehaviour {
     private int dropEXP=30;
 
     private Rigidbody rb;
+    private bool grounded;
 
     private bool leftEncounting = false;
     public bool isEncounting = false;
     private float defEncountingBackSpeed = 8;
     private float encountingBackSpeed = 0;
     private float encountingAcceleration = 20;
-    private float accelerateSmooth = 2.5f;
-
-    private bool idle;
     private int random;
     //敌人属性
     public int HP;
@@ -29,7 +27,7 @@ public class Enemy : MonoBehaviour {
     public int attackAccuracy=10;
     public int defence;
     public int dodge;
-    public float centerYPos = 0.8f;
+    public float centerYPos;
 
     private Vector3 currentPosition;
     private Vector3 privousPosition;
@@ -38,7 +36,7 @@ public class Enemy : MonoBehaviour {
     private bool inMoveHitColdTime=false;//碰撞攻击冷却
     private float moveSpeed=3.5f;
     private Vector3 moveDir;
-    public Spawn spawnPoint;
+    public Spawn spawnArea;
 
     //public void SetSpawn(Spawn spawn)
     //{
@@ -46,10 +44,17 @@ public class Enemy : MonoBehaviour {
     //} 
     //敌人随机跳跃
 
-	void Start ()
+    private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        rb.useGravity = true;
+        centerYPos = rb.worldCenterOfMass.y;
         player = GameObject.Find("Player").GetComponent<Player>();
+    }
+
+    void Start ()
+    {
+        //Initialize initial direction
 
         if (Random.value > 0.5f)
             moveDir = Vector3.right;
@@ -59,10 +64,10 @@ public class Enemy : MonoBehaviour {
 
     public virtual void Update () {
         random = Random.Range(0, 200);
-        if (random == 20)
+        if (random == 20 && grounded)
         {
-            //Debug.Log("Enemy Jump!");
-            jump();
+            Debug.Log("Enemy Jump!");
+            Jump();
         }
 
         //敌人死亡
@@ -73,25 +78,27 @@ public class Enemy : MonoBehaviour {
             DropItem();           
             if(player!=null)
                 player.SendMessage("KillEnemy");//SendMessage调用Player中的KillEnemy函数
-            spawnPoint.count--;
+            spawnArea.CurrentEnemyCount--;
             Destroy(this.gameObject);
         }
         //敌人范围随机移动
-        if (spawnPoint != null&&!inMoveHitColdTime)
+        if (spawnArea != null&&!inMoveHitColdTime)
         {
-            if (transform.position.x > spawnPoint.rightLimit)
+            if (transform.position.x > spawnArea.RightLimit)
             {
                 moveDir = Vector3.left;
 
             }
 
-            if (transform.position.x < spawnPoint.leftLimit)
+            if (transform.position.x < spawnArea.LeftLimit)
             {
                 moveDir = Vector3.right;
             }
 
             transform.Translate(moveDir * Time.deltaTime * moveSpeed);
         }
+
+        Debug.Log("Enemy ground"+grounded.ToString() + centerYPos.ToString());
 
     }
     private void LateUpdate()
@@ -129,6 +136,20 @@ public class Enemy : MonoBehaviour {
         }
 
     }
+
+    private void FixedUpdate()
+    {
+        float groundRaycastDist = 3f;
+        bool hit = Physics.Raycast(transform.position - new Vector3(0, centerYPos - groundRaycastDist, 0), Vector3.down, groundRaycastDist, LayerMask.GetMask("Ground"));
+        if (hit)
+        {
+            grounded = true;
+        }
+        else
+        {
+            grounded = false;
+        }
+    }
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Enemy")
@@ -155,9 +176,9 @@ public class Enemy : MonoBehaviour {
     {
 
     }
-    virtual public void jump()
+    private void Jump()
     {
-        rb.AddForce(Vector3.up * 1000);
+        rb.AddForce(Vector3.up * 50000);
     }
     //碰撞减血
     virtual public void MoveDamage()

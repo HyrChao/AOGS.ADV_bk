@@ -5,30 +5,61 @@ using UnityEngine;
 using System.Collections;
 
 public class Spawn : MonoBehaviour {
+
+    //Parameters for editor
+    public GameObject[] enemy;
+    public GameObject leftLimitAnchor;
+    public GameObject rightLimitAnchor;
     public int maxEnemy;
-    public int count=0;
+
+    private int spCount;
+    private EnemySpawnPoint[] spawnPoint;
+    private Vector3[] spawnPos;
+
+    private int currentEnemyCount = 0;
+    public int CurrentEnemyCount
+    {
+        get
+        {
+            return currentEnemyCount;
+        }
+        set
+        {
+            currentEnemyCount = value;
+        }
+    }
+
     private float time=0;
     private float spawnColdTime=3f;
     private float spawmRandom;
-    public GameObject[] enemy;
     private int variousOfEnemy;
-    public EnemySpawnPoint[] spawnPoint;
-    private int spCount;
-    private Vector3[] spawnPos;
-    public GameObject leftLimitAnchor;
-    public GameObject rightLimitAnchor;
-    public float leftLimit;
-    public float rightLimit;
+
+    private float leftLimit;
+    public  float LeftLimit
+    {
+        get
+        {
+            return leftLimit;
+        }
+    }
+    private float rightLimit;
+    public float RightLimit
+    {
+        get
+        {
+            return rightLimit;
+        }
+    }
+
     public void EnemySpawn(Vector3 pos, Quaternion rot,int i)
     {
 
     }
-
     void Start () {
         variousOfEnemy = enemy.Length;//获取该重生点下所有子对象的数目
         leftLimit = leftLimitAnchor.transform.position.x;
         rightLimit = rightLimitAnchor.transform.position.x;
-        count = 0;
+        currentEnemyCount = 0;
 
         spCount = transform.childCount;
         spawnPoint = new EnemySpawnPoint[spCount];//初始化数组
@@ -38,7 +69,6 @@ public class Spawn : MonoBehaviour {
         {
             spawnPoint[i] = transform.GetChild(i).GetComponent<EnemySpawnPoint>();
         }
-
     }
 	
 	// Update is called once per frame
@@ -50,7 +80,7 @@ public class Spawn : MonoBehaviour {
             spawmRandom = Random.Range(0, 100f);
             if (spawmRandom < 90f)//每X秒有10%几率重生
             {
-                if (count < maxEnemy)
+                if (currentEnemyCount < maxEnemy)
                 {
                     int j=0;
                     int canSpawnNum = 0;
@@ -60,7 +90,7 @@ public class Spawn : MonoBehaviour {
                         {
                             spawnPos[j++] = spawnPoint[i].transform.position;
                             canSpawnNum++;
-                            Debug.Log("SP" + spawnPoint[i].canSpawn.ToString());
+                            Debug.Log("SP" +i.ToString()+ spawnPoint[i].canSpawn.ToString());
                         }
                     }
                     if (canSpawnNum <= 0)//若无重生点能重生则Return
@@ -69,9 +99,9 @@ public class Spawn : MonoBehaviour {
 
                     int randomEnemy = Random.Range(0, variousOfEnemy);//随机重生该出生点所有种类敌人中的任意一个
                     GameObject newEnemy=Instantiate(enemy[randomEnemy], spawnPos[k] + new Vector3(0, enemy[randomEnemy].GetComponent<Enemy>().centerYPos, 0), Quaternion.identity) as GameObject;
-                    newEnemy.GetComponent<Enemy>().spawnPoint=this;
+                    newEnemy.GetComponent<Enemy>().spawnArea=this;
                     Debug.Log("Enemy Spawned!");
-                    count++;
+                    currentEnemyCount++;
                 }
 
             }
