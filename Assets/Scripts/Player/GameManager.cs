@@ -11,9 +11,9 @@ public enum Mode
     _3D
 }
 
+
 static class AO
 {
-
     static private Mode mode = Mode._2D;
     public static Mode Mode
     {
@@ -60,17 +60,25 @@ static class AO
 
 public class GameManager : MonoBehaviour
 {
-    private Player player;
-    private Controller controller;
-    private AnimeManager am;
+    //private static GameManager gm;
+    //public static GameManager GM
+    //{
+    //    get
+    //    {
+    //        if (gm == null)
+    //            gm = new GameManager();
+    //        return gm;
+    //    }
+    //}
+    public Player player;
+    public Controller controller;
+    public AnimeManager am;
 
     private void Awake()
     {
-
         controller = GameObject.Find("Player").GetComponent<Controller>();
         player = GameObject.Find("Player").GetComponent<Player>();
         am = GameObject.Find("Player").GetComponent<AnimeManager>();
-
     }
 
     void Start()
@@ -91,7 +99,7 @@ public class GameManager : MonoBehaviour
         {
             player.Upgrade();
         }
-
+        //Debug.Log(player.state.ToString());
     }
     void LateUpdate()
     {

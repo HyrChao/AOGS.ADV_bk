@@ -2,6 +2,7 @@
 //by Chao
 
 using UnityEngine;
+using UnityEngine.Events;
 using System.Collections;
 
 public enum PlayerState
@@ -20,30 +21,31 @@ public enum PlayerState
     Dying,      //11
 }
 
-
 public class Player : MonoBehaviour {
 
-    //持有武器
-    public Weapon weapon;
-    public Gun gun;
+
     //public FaceUpdate emo;//表情管理器
     public PlayerState state = PlayerState.None;
-    //角色数值
+
+    //Abilities
     public int maxHP = 100;
     public int maxMP = 30;
     public int maxSP = 30;
-
     public int HP;
     public int MP;
     public int SP;
+    public void ResetPlayer()
+    {
+        HP = maxHP;
+        MP = maxMP;
+        SP = maxSP;
+    }
 
-    //经验技能
+    //Level&Exp
     private int lv = 1;
     static private int maxLV=100;
     private int exp=0;
     private int[] expLv = new int[maxLV];//每级所需经验
-
-    //每级经验初始化
     private void SetupExpForEveryLevel()
     {
         expLv[1] = 30;
@@ -69,12 +71,8 @@ public class Player : MonoBehaviour {
         exp += _exp;
     }
 
-
-    //统计
-    private int enemyKilled = 0;
-
-    //金钱&点数
-    private int gold=0;
+    //Gold/Items
+    private int gold = 0;
     public int Gold()
     {
         return gold;
@@ -83,48 +81,39 @@ public class Player : MonoBehaviour {
     {
         gold += _gold;
     }
-    //持有物品
 
-    public float jumpSpeed = 3;       //delta time优化，影响起跳-落地时间
-    public float jumpVelocity = 6f;  //跳跃初速度，影响自由落体最大高度
-    public float jumpMultiple = 1.15f;//跳跃-高跳系数 
-    public float moveSpeed = 6;     //6
-    public float rumMultiple = 1.6f; //移动-奔跑系数1.6
-    //private AnimatorStateInfo currentBaseState;
+    //Point/Statics
+    private int enemyKilled = 0;
 
-    public float attackSpeed = 0.05f;
-    public float fireSpeed = 0.1f;
-    //角色运动状态
+    //Weapons
+    public Weapon weapon;
+    public Gun gun;
 
-    public bool faceRight = true;
     //Awake
-    public void ResetPlayer()
-    {
-        HP = maxHP;
-        MP = maxMP;
-        SP = maxSP;
-    }
-
     private void Awake()
     {
         SetupExpForEveryLevel();
+        ResetPlayer();        
     }
 
     //Start
     private void Start()
     {
-        ResetPlayer();
+
     }
 
     private void Update()
     {
-
+        if (Input.GetKeyDown("Fire"))
+            Fire();
     }
 
     private void FixedUpdate()
     {
 
     }
+
+
 
     //回复HP
     private void RecoverHP(int reHP)
@@ -148,35 +137,22 @@ public class Player : MonoBehaviour {
     {
         Debug.Log("Damaged!"+HP.ToString());
     }
-    //攻击
-    //private IEnumerator Attack()
-    //{
-    //    Debug.Log("Attack");
-    //    state.attacking = true;
-    //    //emo.atkEmo();
-    //    yield return new WaitForSeconds(attackSpeed);
-    //    Debug.Log("Attack End");
-    //    state.attacking = false;
-    //    //emo.norEmo();
-    //    //yield return StartCoroutine(InnerUnityCoroutine());协程嵌套
-    //}
-    //远程导弹攻击
-    //private IEnumerator Fire()
-    //{
-    //    Debug.Log("Fire");
-    //    gun.Fire();
-    //    state.firing = true;
-    //    //emo.firEmo();
-    //    yield return new WaitForSeconds(fireSpeed);
-    //    Debug.Log("Fire End");
-    //    state.firing = false;
-    //    //emo.norEmo();
-    //}
-    //防御
+
     private void Defence()
     {
 
     }
+
+    private void Attack()
+    {
+
+    }
+
+    private void Fire()
+    {
+        gun.Fire();
+    }
+
     private void KillEnemy()
     {
         enemyKilled++;

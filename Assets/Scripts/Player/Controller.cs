@@ -11,7 +11,6 @@ public class Controller : MonoBehaviour {
     private bool debug;
 
     //Referances
-    private Player player;
     private GameObject charaMesh;
     private CapsuleCollider col;
     private GameManager gm;
@@ -22,7 +21,7 @@ public class Controller : MonoBehaviour {
     private float moveAxisZ = 0f;
 
     //Parameters for movement
-    private float acceleration = 10f;
+    //private float acceleration = 10f;
     private float speed = 10f;
     private float moveSpeed = 6f;
     private float runSpeed;
@@ -31,29 +30,29 @@ public class Controller : MonoBehaviour {
     Quaternion backRotation = Quaternion.Euler(0f, 245f, 0f);
 
     //Parameters for jumping
-    private int jumpPower = 0;
-    private bool jumpJudging = false;
-    private int jumpHeldFrame = 0; //Frames used to check how long jump key player hold down
-    private float jumpForce = 8f;
-    private bool canJump = false;
+    //private bool jumpJudging = false;
+    //private float jumpPower = 0; //Frames used to check how long jump key gm.player hold down
+    //private int jumpHeldFrame = 0;
+    private float jumpForce = 15000f;
+    //private bool canJump = false;
     private Vector3 moveDir = Vector3.zero;
 
     //Parameters for ground check
     private int environmentLayerMask; // Layer for raycast to hit
     private float gravityCenterHeight = 0f;
     private float groundRaycastDist = 3f;
-    private float groundRaycastLapse = 0f;
+    private float groundRaycastLapse = -0.5f;
     private bool grounded = false;
     private bool facingRight = false;
 
     // Use this for initialization
     void Awake()
     {
+        gm = GetComponent<GameManager>();
         rb = GetComponent<Rigidbody>();
         rb.useGravity = true;
         charaMesh = GameObject.Find("PlayerMesh");
         environmentLayerMask = LayerMask.GetMask("Ground");
-        player = transform.GetComponent<Player>();
         col = GetComponent<CapsuleCollider>();
         //am = GetComponent<AnimeManager>();
         gravityCenterHeight = col.height / 2;
@@ -68,18 +67,9 @@ public class Controller : MonoBehaviour {
     // Update is called once per frame for physics
     private void Update()
     {
-        //Get player input
+        //Get gm.player input
         moveAxisX = Input.GetAxis("Horizontal");
         moveAxisZ = Input.GetAxis("Vertical");
-
-        if (Input.GetButton("Jump"))
-        {
-            jumpJudging = false;
-            ++jumpHeldFrame;
-        }
-            
-        else
-            jumpHeldFrame = 0;
 
         if (Input.GetButton("Run"))
         {
@@ -120,17 +110,48 @@ public class Controller : MonoBehaviour {
         }
 
         //Movement
-        transform.Translate(moveDir * Time.deltaTime);  
+        transform.Translate(moveDir * Time.deltaTime);
 
-        //Jump
-        if (jumpAxis > 0 && grounded && canJump)
-        {
-            //Jump(jumpForce*10000);
-            if (jumpAxis < 0.1)
-                jumpAxis = 0.1f;
-            Jump(jumpForce * 10000f * Time.deltaTime);
-        }
+        ////Jump
+        //if (jumpAxis > 0 && grounded && canJump)
+        //{
+        //    //Jump(jumpForce*10000);
+        //    if (jumpAxis < 0.1)
+        //        jumpAxis = 0.1f;
+        //    Jump(jumpForce * 10000f * Time.deltaTime);
+        //}
+        
+        if (Input.GetButtonDown("Jump")&&grounded)
+            Jump();
 
+        //if (canJump)
+        //{
+        //    //Def jump power by held time
+        //    if (Input.GetButton("Jump"))
+        //    {
+        //        if (jumpHeldFrame < 5)
+        //        {
+        //            jumpJudging = true;
+        //            ++jumpHeldFrame;
+        //        }
+        //        else
+        //        {
+        //            jumpJudging = false; //If judge time over, end judge
+        //            jumpPower = 5 + jumpHeldFrame / 2;
+        //            jumpHeldFrame = 0;
+        //            Jump(jumpPower);
+        //        }
+        //    }
+        //    else
+        //        //Do jump if judge complete
+        //        if (jumpJudging)
+        //    {
+        //        jumpJudging = false;
+        //        jumpPower = 5 + jumpHeldFrame / 2;
+        //        jumpHeldFrame = 0;
+        //        Jump(jumpPower);
+        //    }
+        //}
 
 
         debug = grounded;
@@ -143,7 +164,27 @@ public class Controller : MonoBehaviour {
     {
 
 
+        //Refresh gm.player states
+        if (grounded)
+        {
+            gm.player.state = PlayerState.Idle;
+            if (moveDir != Vector3.zero)
+            {
+                gm.player.state = PlayerState.Walking;
+                if (speed > moveSpeed)
+                    gm.player.state = PlayerState.Running;
+            }
+        }
+        else
+        {
+            if (rb.velocity.y <= 0)
+                gm.player.state = PlayerState.Falling;
+            else
+            {
+                gm.player.state = PlayerState.Jumping;
+            }
 
+        }
 
         //if (grounded)
         //{
@@ -164,41 +205,11 @@ public class Controller : MonoBehaviour {
             grounded = false;
         }
 
-        //Refresh player states
-        if (grounded)
-        {
-            player.state = PlayerState.Idle;
-            if (moveDir != Vector3.zero)
-            {
-                player.state = PlayerState.Walking;
-                if (speed > moveSpeed)
-                    player.state = PlayerState.Running;
-            }
-            if (rb.velocity.y == 0)
-                canJump = true;
-        }
-        else
-        {
-            if (rb.velocity.y <= 0)
-                player.state = PlayerState.Falling;
-            else
-            {
-                player.state = PlayerState.Jumping;
-                canJump = false;
-            }
-
-        }
-
     }
 
-    void Jump(float force)
+    void Jump()
     {
-        if (force < 0)
-        {
-            return;
-        }
-
-        rb.AddForce(new Vector3(0, force, 0));
+        rb.AddForce(0, jumpForce, 0);
     }
 	
 }
