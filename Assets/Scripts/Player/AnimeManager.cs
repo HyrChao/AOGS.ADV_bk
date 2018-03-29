@@ -16,13 +16,13 @@ public class AnimeManager : MonoBehaviour {
     
     void Start ()
     {
-        animator = transform.FindChild("PlayerMesh").GetComponent<Animator>();
-        gm = GetComponent<GameManager>();
+        animator = transform.Find("PlayerMesh").GetComponent<Animator>();
+        gm = AO.GetGameManager();
         //IKLook = transform.FindChild("PlayerMesh").GetComponent<IKLookAt>();
     }
     private void FixedUpdate()
     {
-        animator.SetInteger("State", gm.player.state.GetHashCode());
+        animator.SetInteger("State", gm.Player.state.GetHashCode());
         //if (!animator.IsInTransition(0))
         //将游戏管理器中角色状态值赋予动画组件
         //currentBaseState = animator.GetCurrentAnimatorStateInfo(0);//更新动画状态

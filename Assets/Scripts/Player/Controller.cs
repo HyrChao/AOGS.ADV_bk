@@ -45,10 +45,18 @@ public class Controller : MonoBehaviour {
     private bool grounded = false;
     private bool facingRight = false;
 
+    private bool canRun = false;
+    public bool CanRun
+    {
+        set
+        {
+            canRun = value;
+        }
+    }
     // Use this for initialization
     void Awake()
     {
-        gm = GetComponent<GameManager>();
+        gm = AO.GetGameManager();
         rb = GetComponent<Rigidbody>();
         rb.useGravity = true;
         charaMesh = GameObject.Find("PlayerMesh");
@@ -71,7 +79,7 @@ public class Controller : MonoBehaviour {
         moveAxisX = Input.GetAxis("Horizontal");
         moveAxisZ = Input.GetAxis("Vertical");
 
-        if (Input.GetButton("Run"))
+        if (Input.GetButton("Run")&&canRun)
         {
             speed = runSpeed;
         }
@@ -167,21 +175,21 @@ public class Controller : MonoBehaviour {
         //Refresh gm.player states
         if (grounded)
         {
-            gm.player.state = PlayerState.Idle;
+            gm.Player.state = PlayerState.Idle;
             if (moveDir != Vector3.zero)
             {
-                gm.player.state = PlayerState.Walking;
+                gm.Player.state = PlayerState.Walking;
                 if (speed > moveSpeed)
-                    gm.player.state = PlayerState.Running;
+                    gm.Player.state = PlayerState.Running;
             }
         }
         else
         {
             if (rb.velocity.y <= 0)
-                gm.player.state = PlayerState.Falling;
+                gm.Player.state = PlayerState.Falling;
             else
             {
-                gm.player.state = PlayerState.Jumping;
+                gm.Player.state = PlayerState.Jumping;
             }
 
         }

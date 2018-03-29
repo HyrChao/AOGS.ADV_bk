@@ -14,7 +14,7 @@ public class IKController : MonoBehaviour
     void Start()
     {
         avator = GetComponent<Animator>();
-        gunMesh = gun.transform.FindChild("GunMesh");
+        gunMesh = gun.transform.Find("GunMesh");
     }
     void OnAnimatorIK(int layerIndex)
     {
@@ -24,7 +24,7 @@ public class IKController : MonoBehaviour
             {
                 if (gun != null)
                 {
-                    Vector3 scale = gun.gunScale*gun.laod;
+                    Vector3 scale = gun.transform.localScale*gun.Load;
                     gunMesh.localScale = scale;
                 }
             }
@@ -35,15 +35,15 @@ public class IKController : MonoBehaviour
                 {
                     avator.SetIKPosition(AvatarIKGoal.LeftHand, gun.leftHandPos.position);//左手IKposition
                     avator.SetIKRotation(AvatarIKGoal.LeftHand, gun.leftHandPos.rotation);
-                    avator.SetIKPositionWeight(AvatarIKGoal.LeftHand, gun.laod);
-                    avator.SetIKRotationWeight(AvatarIKGoal.LeftHand, gun.laod);
+                    avator.SetIKPositionWeight(AvatarIKGoal.LeftHand, gun.Load);
+                    avator.SetIKRotationWeight(AvatarIKGoal.LeftHand, gun.Load);
                 }
                 if (gun.rightHandPos != null)
                 {
                     avator.SetIKPosition(AvatarIKGoal.RightHand, gun.rightHandPos.position);//左手IKposition
                     avator.SetIKRotation(AvatarIKGoal.RightHand, gun.rightHandPos.rotation);
-                    avator.SetIKPositionWeight(AvatarIKGoal.RightHand, gun.laod);
-                    avator.SetIKRotationWeight(AvatarIKGoal.RightHand, gun.laod);
+                    avator.SetIKPositionWeight(AvatarIKGoal.RightHand, gun.Load);
+                    avator.SetIKRotationWeight(AvatarIKGoal.RightHand, gun.Load);
                 }
             }
         }

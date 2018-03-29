@@ -2,7 +2,6 @@
 //by Chao
 
 using UnityEngine;
-using System.Collections;
 using UnityEngine.SceneManagement;
 
 public enum Mode
@@ -80,15 +79,57 @@ public class GameManager : MonoBehaviour
     //        return gm;
     //    }
     //}
-    public Player player;
-    public Controller controller;
-    public AnimeManager am;
+    private Player player;
+    public Player Player
+    {
+        get
+        {
+            if (controller != null)
+                return player;
+            else
+                return null;
+        }
+    }
+    private Controller controller;
+    public Controller Controller
+    {
+        get
+        {
+            if (controller != null)
+                return controller;
+            else
+                return null;
+        }
+    }
+    private AnimeManager am;
+    public AnimeManager AM
+    {
+        get
+        {
+            if (am != null)
+                return am;
+            else
+                return null;
+        }
+    }
+    private HUD hud;
+    public HUD HUD
+    {
+        get
+        {
+            if (hud != null)
+                return hud;
+            else
+                return null;
+        }
+    }
 
     private void Awake()
     {
         controller = GameObject.Find("Player").GetComponent<Controller>();
         player = GameObject.Find("Player").GetComponent<Player>();
         am = GameObject.Find("Player").GetComponent<AnimeManager>();
+        hud = GameObject.Find("HUD").GetComponent<HUD>();
     }
 
     void Start()
@@ -98,18 +139,10 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
-
         if (player.HP <= 0)
         {
             GameOver();
         }
-
-        //检测是否升级
-        if (player.GetRemainEXP() <= 0)
-        {
-            player.Upgrade();
-        }
-        //Debug.Log(player.state.ToString());
     }
     void LateUpdate()
     {

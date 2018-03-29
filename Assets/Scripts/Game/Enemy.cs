@@ -1,13 +1,13 @@
 ﻿//2017/3/30
 //by Chao
-//敌人基类脚本
+//Enemy base script
 
 using UnityEngine;
 using System.Collections;
 
 public class Enemy : MonoBehaviour {
-    private Player player;//目标玩家
-    private Item[] item;//可能掉落的物品
+    private GameManager gm;
+    private Item[] item;//Drop items
     private int dropGold=20;
     private int dropEXP=30;
 
@@ -20,7 +20,8 @@ public class Enemy : MonoBehaviour {
     private float encountingBackSpeed = 0;
     private float encountingAcceleration = 20;
     private int random;
-    //敌人属性
+
+    //Enemy properties
     public int HP;
     public int MP;
     public int attack=20;
@@ -32,24 +33,21 @@ public class Enemy : MonoBehaviour {
     private Vector3 currentPosition;
     private Vector3 privousPosition;
 
-    //出生点&移动相关
-    private bool inMoveHitColdTime=false;//碰撞攻击冷却
+    //Spawn
+    public Spawn spawnArea;
+    
+    //Movenment
+    private bool inMoveHitColdTime=false;//Hit attack cold time
     private float moveSpeed=3.5f;
     private Vector3 moveDir;
-    public Spawn spawnArea;
 
-    //public void SetSpawn(Spawn spawn)
-    //{
-    //    spawnPoint = spawn;
-    //} 
-    //敌人随机跳跃
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         rb.useGravity = true;
         centerYPos = rb.worldCenterOfMass.y;
-        player = GameObject.Find("Player").GetComponent<Player>();
+        gm = AO.GetGameManager();
     }
 
     void Start ()
@@ -62,7 +60,9 @@ public class Enemy : MonoBehaviour {
             moveDir = Vector3.left;               
     }
 
-    public virtual void Update () {
+    public virtual void Update ()
+    {
+        //Ramdom jump for enemy
         random = Random.Range(0, 200);
         if (random == 20 && grounded)
         {
@@ -70,18 +70,19 @@ public class Enemy : MonoBehaviour {
             Jump();
         }
 
-        //敌人死亡
+        //Enemy killed
         if (HP <= 0)
         {
             DropEXP();
             DropGold();
-            DropItem();           
-            if(player!=null)
-                player.SendMessage("KillEnemy");//SendMessage调用Player中的KillEnemy函数
+            DropItem();
+            if (gm.Player != null)
+                gm.Player.EnemyKilled++;
             spawnArea.CurrentEnemyCount--;
             Destroy(this.gameObject);
         }
-        //敌人范围随机移动
+
+        //Enemy move in range
         if (spawnArea != null&&!inMoveHitColdTime)
         {
             if (transform.position.x > spawnArea.RightLimit)
@@ -97,23 +98,20 @@ public class Enemy : MonoBehaviour {
 
             transform.Translate(moveDir * Time.deltaTime * moveSpeed);
         }
-
-        Debug.Log("Enemy ground"+grounded.ToString() + centerYPos.ToString());
-
     }
     private void LateUpdate()
     {
         privousPosition = currentPosition;
         currentPosition = transform.position;
-        //敌人被攻击后退
+        //Enemy hit backstep
         if (isEncounting)
         {
-            //判断退后方向
-            if (transform.position.x - player.transform.position.x > 0)
+            //Judge direction
+            if (transform.position.x - gm.Player.transform.position.x > 0)
             {
                 leftEncounting = false;
             }
-            if (transform.position.x - player.transform.position.x < 0)
+            if (transform.position.x - gm.Player.transform.position.x < 0)
             {
                 leftEncounting = true;
             }
@@ -132,7 +130,7 @@ public class Enemy : MonoBehaviour {
                 isEncounting = false;
                 encountingBackSpeed = defEncountingBackSpeed;
             }
-            transform.position = currentPosition;//更新位置
+            transform.position = currentPosition;//update position
         }
 
     }
@@ -163,8 +161,8 @@ public class Enemy : MonoBehaviour {
 
         if (collision.gameObject.tag == "Player")
         {
-            if(player!=null)
-                if (!player.state.Equals(PlayerState.Damaging)&& !inMoveHitColdTime)
+            if(gm.Player!=null)
+                if (!gm.Player.state.Equals(PlayerState.Damaging)&& !inMoveHitColdTime)
                 {
                     StartCoroutine(MoveHitColdTime());
                     MoveDamage();
@@ -180,34 +178,35 @@ public class Enemy : MonoBehaviour {
     {
         rb.AddForce(Vector3.up * 50000);
     }
-    //碰撞减血
+
+    //Damage when player hits
     virtual public void MoveDamage()
     {
         int atkValue = attack + (int)(attackAccuracy * 0.5 - Random.Range(0, attackAccuracy));
-        player.HP -= atkValue;
+        gm.Player.DropHP(atkValue);
         Debug.Log("Enemy Attack" + atkValue.ToString());
     }
-    //掉落经验
+    //Drop exp
     virtual public void DropEXP()
     {
-        player.AddEXP(dropEXP);
+        gm.Player.AddEXP(dropEXP);
     }
-    //掉落金币
+    //Drop gold
     virtual public void DropGold()
     {
         
     }
-    //掉落物品
+    //Drop items
     virtual public void DropItem()
     {
 
     }
-    //攻击玩家
+    //Attack player
     virtual public void Attack()
     {
 
     }
-    //碰撞停顿
+    //Cold time while hit
     private IEnumerator MoveHitColdTime()
     {
         inMoveHitColdTime = true;
