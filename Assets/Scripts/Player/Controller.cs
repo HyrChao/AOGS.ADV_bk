@@ -79,7 +79,7 @@ public class Controller : MonoBehaviour {
         moveAxisX = Input.GetAxis("Horizontal");
         moveAxisZ = Input.GetAxis("Vertical");
 
-        if (Input.GetButton("Run")&&canRun)
+        if (Input.GetButton("Run")&&canRun&&!gm.Player.InRunColdTime)
         {
             speed = runSpeed;
         }

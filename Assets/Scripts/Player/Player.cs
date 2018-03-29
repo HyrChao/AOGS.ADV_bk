@@ -138,13 +138,24 @@ public class Player : MonoBehaviour {
     public Weapon weapon;
     public Gun gun;
 
+    //Other parameters
+    private bool inRunColdTime;
+    public bool InRunColdTime
+    {
+        get
+        {
+            return inRunColdTime;
+        }
+    }
+
     //Awake
     private void Awake()
     {
         lv = new Level(100);
         gm = AO.GetGameManager();
         //gun = 
-        ResetPlayer();        
+        ResetPlayer();
+        inRunColdTime = false;
     }
 
     //Start
@@ -153,6 +164,7 @@ public class Player : MonoBehaviour {
 
     }
 
+    //Update
     private void Update()
     {
         if (Input.GetButtonDown("Fire"))
@@ -166,12 +178,22 @@ public class Player : MonoBehaviour {
                 sp += 0.1f;
         }
 
-        if (sp > 1)
+        if (sp > 0)
             gm.Controller.CanRun = true;
         else
+        {
             gm.Controller.CanRun = false;
+            inRunColdTime = true;
+        }
+
+        if (inRunColdTime && Input.GetButtonUp("Run"))
+        {
+            inRunColdTime = false;
+        }
+
     }
 
+    //Fixed Update
     private void FixedUpdate()
     {
 
