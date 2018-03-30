@@ -63,7 +63,7 @@ public class HUD : MonoBehaviour {
         lvText.text = "Lv." + gm.Player.LV.ToString();
         msgText.text = msg.First.Value + "\n" + msg.First.Next.Value + "\n" + msg.First.Next.Next.Value + "\n" + msg.First.Next.Next.Next.Value + "\n" + msg.First.Next.Next.Next.Next.Value;
         gilText.text = "GIL."+gm.Player.Gold.ToString();
-        //Debug.Log(debug);
+
     }
 
 }

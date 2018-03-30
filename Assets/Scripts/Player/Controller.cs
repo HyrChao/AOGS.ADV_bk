@@ -43,7 +43,6 @@ public class Controller : MonoBehaviour {
     private float groundRaycastDist = 3f;
     private float groundRaycastLapse = -0.5f;
     private bool grounded = false;
-    private bool facingRight = false;
 
     private bool canRun = false;
     public bool CanRun
@@ -101,13 +100,13 @@ public class Controller : MonoBehaviour {
                 if (moveAxisX > 0f)                              //面向判定&改向
                 {
                     charaMesh.transform.rotation = frontRotation;
-                    facingRight = true;
+                    gm.Player.FaceDirection = Vector3.right;
                 }
 
                 if (moveAxisX < 0f)                              //面向判定&改向
                 {
                     charaMesh.transform.rotation = backRotation;
-                    facingRight = false;
+                    gm.Player.FaceDirection = Vector3.left;
                 }
             }
         }

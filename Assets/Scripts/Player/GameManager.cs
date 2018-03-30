@@ -1,5 +1,6 @@
 ﻿//2017/2/23
 //by Chao
+//GameManager mono instance
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -51,12 +52,27 @@ public class GameManager : MonoBehaviour
                 return null;
         }
     }
-
+    private SlotManager slot;
+    public SlotManager Slot
+    {
+        get
+        {
+            if (slot != null)
+                return slot;
+            else
+                return null;
+        }
+    }
     private void Awake()
     {
+        if(AO.gm == null)
+        {
+            AO.gm = this;
+        }
         controller = GameObject.Find("Player").GetComponent<Controller>();
         player = GameObject.Find("Player").GetComponent<Player>();
         am = GameObject.Find("Player").GetComponent<AnimeManager>();
+        slot = GameObject.Find("Player").GetComponent<SlotManager>();
         hud = GameObject.Find("HUD").GetComponent<HUD>();
     }
 
@@ -75,14 +91,6 @@ public class GameManager : MonoBehaviour
     void LateUpdate()
     {
 
-    }
-    //Bool转换Float
-    public static float BoolToFloat(bool boolean)
-    {
-        if (boolean)
-            return 1f;
-        else
-            return 0f;
     }
 
     public void GameOver()

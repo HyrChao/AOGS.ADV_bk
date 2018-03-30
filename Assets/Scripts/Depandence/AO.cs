@@ -1,6 +1,7 @@
 ﻿//2018/03/30
 //By Chao
 //Static game manager
+
 using UnityEngine;
 
 static class AO
@@ -46,6 +47,8 @@ static class AO
         }
     }
 
+    public static GameManager gm;
+
     public static GameManager GetGameManager()
     {
         GameManager gm = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -57,4 +60,13 @@ static class AO
             return null;
     }
 
+    public static float BoolToFloat(bool boolean)
+    {
+        if (boolean)
+            return 1f;
+        else
+            return 0f;
+    }
+
 }
+

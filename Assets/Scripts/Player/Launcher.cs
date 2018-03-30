@@ -1,16 +1,15 @@
 ﻿//2017/3/31
 //by Chao
-//决定发射炮弹的速度位置及攻击力
+//Launcher, fire properties
 
 using UnityEngine;
 using System.Collections;
 
-public class Gun : MonoBehaviour {
-    public GameObject rocket;
-    public GameObject launchPos;
-    public GameObject lockPos;
-    private Vector3 rocketFocus;
-    private float force =600;
+public class Launcher : MonoBehaviour {
+    //public GameObject rocket;
+    //public GameObject launchPos;
+    //public GameObject lockPos;
+
     private int damage=23;
 
     public Transform leftHandPos;//IK左手位置
@@ -29,24 +28,26 @@ public class Gun : MonoBehaviour {
         }
     }
 
-    private Vector3 gunPos;
+
     private Vector3 gunScale;
 
     public void Fire()
     {
-        GameObject newRocket = Instantiate(rocket, launchPos.transform.position, Quaternion.Euler(0,0,90)) as GameObject;
-        newRocket.GetComponent<Rigidbody>().AddForce(rocketFocus* force);
-        newRocket.GetComponent<Rocket>().SetDamage(damage);
+        //GameObject newRocket = Instantiate(rocket, launchPos.transform.position, Quaternion.Euler(0,0,90)) as GameObject;
+        //newRocket.GetComponent<Rigidbody>().AddForce(force*AO.gm.Player.FaceDirection);
+        //newRocket.GetComponent<Rocket>().SetDamage(damage);
     }
+    private void Awake()
+    {
 
+    }
     private void Start()
     {
-        gunPos = transform.localPosition;
-        gunScale = transform.Find("GunMesh").transform.localScale;
+
     }
     private void Update()
     {
-        rocketFocus = lockPos.transform.position - launchPos.transform.position;//更新导弹发射方向
+        ///rocketFocus = lockPos.transform.position - launchPos.transform.position;//更新导弹发射方向
     }
 
     //private void OnTriggerEnter(Collider other)

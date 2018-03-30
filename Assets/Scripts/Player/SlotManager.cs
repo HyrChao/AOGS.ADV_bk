@@ -8,11 +8,13 @@ public class SlotManager : MonoBehaviour {
     public GameObject laucherSlot;
     public GameObject laucherLaunchSlot;
 
-	void Start () {
+	void Start ()
+    {
 		
 	}
 	
-	void Update () {
+	void Update ()
+    {
 		
 	}
 }

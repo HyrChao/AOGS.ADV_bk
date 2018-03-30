@@ -8,13 +8,13 @@ using System.Collections;
 public class IKController : MonoBehaviour
 {
     private Animator avator;
-    public Gun gun;
+    public Launcher launcher;
     private Transform gunMesh;
     public bool ikActive = false;
     void Start()
     {
         avator = GetComponent<Animator>();
-        gunMesh = gun.transform.Find("GunMesh");
+        gunMesh = launcher.transform.Find("GunMesh");
     }
     void OnAnimatorIK(int layerIndex)
     {
@@ -22,28 +22,28 @@ public class IKController : MonoBehaviour
         {
             if (layerIndex == 0)
             {
-                if (gun != null)
+                if (launcher != null)
                 {
-                    Vector3 scale = gun.transform.localScale*gun.Load;
+                    Vector3 scale = launcher.transform.localScale* launcher.Load;
                     gunMesh.localScale = scale;
                 }
             }
             if (layerIndex == 2)
             {
 
-                if (gun.leftHandPos != null)
+                if (launcher.leftHandPos != null)
                 {
-                    avator.SetIKPosition(AvatarIKGoal.LeftHand, gun.leftHandPos.position);//左手IKposition
-                    avator.SetIKRotation(AvatarIKGoal.LeftHand, gun.leftHandPos.rotation);
-                    avator.SetIKPositionWeight(AvatarIKGoal.LeftHand, gun.Load);
-                    avator.SetIKRotationWeight(AvatarIKGoal.LeftHand, gun.Load);
+                    avator.SetIKPosition(AvatarIKGoal.LeftHand, launcher.leftHandPos.position);//左手IKposition
+                    avator.SetIKRotation(AvatarIKGoal.LeftHand, launcher.leftHandPos.rotation);
+                    avator.SetIKPositionWeight(AvatarIKGoal.LeftHand, launcher.Load);
+                    avator.SetIKRotationWeight(AvatarIKGoal.LeftHand, launcher.Load);
                 }
-                if (gun.rightHandPos != null)
+                if (launcher.rightHandPos != null)
                 {
-                    avator.SetIKPosition(AvatarIKGoal.RightHand, gun.rightHandPos.position);//左手IKposition
-                    avator.SetIKRotation(AvatarIKGoal.RightHand, gun.rightHandPos.rotation);
-                    avator.SetIKPositionWeight(AvatarIKGoal.RightHand, gun.Load);
-                    avator.SetIKRotationWeight(AvatarIKGoal.RightHand, gun.Load);
+                    avator.SetIKPosition(AvatarIKGoal.RightHand, launcher.rightHandPos.position);//左手IKposition
+                    avator.SetIKRotation(AvatarIKGoal.RightHand, launcher.rightHandPos.rotation);
+                    avator.SetIKPositionWeight(AvatarIKGoal.RightHand, launcher.Load);
+                    avator.SetIKRotationWeight(AvatarIKGoal.RightHand, launcher.Load);
                 }
             }
         }

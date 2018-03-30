@@ -12,6 +12,20 @@ public class Player : MonoBehaviour {
 
     public PlayerState state = PlayerState.None;
 
+    //Tansform
+    private Vector3 faceDirection;
+    public Vector3 FaceDirection
+    {
+        get
+        {
+            return faceDirection;
+        }
+        set
+        {
+            faceDirection = value;
+        }
+    }
+
     //Abilities
     private int maxHP = 100;
     public int MaxHP
@@ -121,7 +135,7 @@ public class Player : MonoBehaviour {
 
     //Weapons
     public Weapon weapon;
-    public Gun gun;
+    public Launcher launcher;
 
     //Other parameters
     private bool inRunColdTime;
@@ -146,7 +160,8 @@ public class Player : MonoBehaviour {
     //Start
     private void Start()
     {
-
+        launcher = Instantiate(launcher, gm.Slot.laucherSlot.transform.position, gm.Slot.laucherSlot.transform.rotation);
+        launcher.gameObject.transform.parent = gm.Slot.laucherSlot.transform;//Initialize as child of slot
     }
 
     //Update
@@ -226,7 +241,7 @@ public class Player : MonoBehaviour {
 
     private void Fire()
     {
-        gun.Fire();
+        launcher.Fire();
     }
 
     private void KillEnemy()

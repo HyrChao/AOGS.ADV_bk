@@ -25,7 +25,7 @@ public class Rocket : MonoBehaviour {
     }
     void Start () {
         StartCoroutine(LifeTimer());
-        //Vector3.Cross(new Vector3(Gun.force * Player.faceRight, 0,0) , Gun.rocketFocus
+        //Vector3.Cross(new Vector3(Launcher.force * Player.faceRight, 0,0) , Launcher.rocketFocus
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -36,7 +36,6 @@ public class Rocket : MonoBehaviour {
             enemy.HP -= (damage-enemy.defence);
             enemy.isEncounting = true;
             Destroy(this.gameObject);
-
         }
     }
 }
