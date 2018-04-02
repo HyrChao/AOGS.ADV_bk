@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class SlotManager : MonoBehaviour {
 
-    public GameObject weaponSlot;
-    public GameObject laucherSlot;
-    public GameObject laucherLaunchSlot;
+    public Transform weaponSlot;
+    public Transform laucherSlot;
+    public Transform laucherLaunchSlot;
 
 	void Start ()
     {

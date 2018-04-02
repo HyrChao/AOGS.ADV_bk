@@ -6,16 +6,18 @@ using UnityEngine;
 using System.Collections;
 
 public class Launcher : MonoBehaviour {
-    //public GameObject rocket;
-    //public GameObject launchPos;
-    //public GameObject lockPos;
+    //define what kind of rocket to launch
+    public Rocket rocket;
+    public Transform rocketLaunchPos;
 
     private int damage=23;
+    private float force = 1000f;
+    private float coldTime = 0.5f;
 
-    public Transform leftHandPos;//IK左手位置
-    public Transform rightHandPos;//IK右手位置
+    public Transform leftHandPos;//IK left hand pos
+    public Transform rightHandPos;//IK right hand pos
 
-    private float load = 0;//是否抬起
+    private float load = 0;//if or not loaded
     public float Load
     {
         get
@@ -27,23 +29,36 @@ public class Launcher : MonoBehaviour {
             load = value;
         }
     }
-
-
-    private Vector3 gunScale;
-
+    
     public void Fire()
     {
-        //GameObject newRocket = Instantiate(rocket, launchPos.transform.position, Quaternion.Euler(0,0,90)) as GameObject;
-        //newRocket.GetComponent<Rigidbody>().AddForce(force*AO.gm.Player.FaceDirection);
-        //newRocket.GetComponent<Rocket>().SetDamage(damage);
+        //load = Mathf.Lerp(0, 1, 0.5f);
+        load = 1;
+        AO.gm.Player.CanFire = false;
+        Invoke("FireDone", coldTime);
+        this.transform.position = AO.gm.Slot.laucherLaunchSlot.position;
+        this.transform.rotation = AO.gm.Slot.laucherLaunchSlot.rotation;
+        Rocket newRocket = Instantiate(rocket, rocketLaunchPos.position, Quaternion.Euler(0,0,90)) as Rocket;
+        newRocket.GetComponent<Rigidbody>().AddForce(force*AO.gm.Player.FaceDirection);
+        newRocket.GetComponent<Rocket>().SetDamage(damage);
     }
+
+    private void FireDone()
+    {
+        //load = Mathf.Lerp(1, 0, 0.5f);
+        load = 0;
+        AO.gm.Player.CanFire = true;
+        this.transform.position = AO.gm.Slot.laucherSlot.position;
+        this.transform.rotation = AO.gm.Slot.laucherSlot.rotation;
+    }
+
     private void Awake()
     {
 
     }
     private void Start()
     {
-
+        
     }
     private void Update()
     {

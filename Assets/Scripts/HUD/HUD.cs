@@ -61,7 +61,7 @@ public class HUD : MonoBehaviour {
         expSlider.value = 100 * ((float)gm.Player.GetExp() / (gm.Player.GetRemainExp() + gm.Player.GetExp()));
 
         lvText.text = "Lv." + gm.Player.LV.ToString();
-        msgText.text = msg.First.Value + "\n" + msg.First.Next.Value + "\n" + msg.First.Next.Next.Value + "\n" + msg.First.Next.Next.Next.Value + "\n" + msg.First.Next.Next.Next.Next.Value;
+        msgText.text = msg.First.Next.Next.Next.Next.Value + "\n" + msg.First.Next.Next.Next.Value + "\n" + msg.First.Next.Next.Value + "\n" + msg.First.Next.Value + "\n" + msg.First.Value;
         gilText.text = "GIL."+gm.Player.Gold.ToString();
 
     }

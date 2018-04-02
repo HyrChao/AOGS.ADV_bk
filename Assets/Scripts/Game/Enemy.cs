@@ -66,7 +66,7 @@ public class Enemy : MonoBehaviour {
         random = Random.Range(0, 200);
         if (random == 20 && grounded)
         {
-            Debug.Log("Enemy Jump!");
+            //Debug.Log("Enemy Jump!");
             Jump();
         }
 
@@ -165,7 +165,7 @@ public class Enemy : MonoBehaviour {
                 if (!gm.Player.state.Equals(PlayerState.Damaging)&& !inMoveHitColdTime)
                 {
                     StartCoroutine(MoveHitColdTime());
-                    MoveDamage();
+                    MoveAttack();
                 }
 
         }
@@ -180,11 +180,11 @@ public class Enemy : MonoBehaviour {
     }
 
     //Damage when player hits
-    virtual public void MoveDamage()
+    virtual public void MoveAttack()
     {
         int atkValue = attack + (int)(attackAccuracy * 0.5 - Random.Range(0, attackAccuracy));
         gm.Player.DropHP(atkValue);
-        Debug.Log("Enemy Attack" + atkValue.ToString());
+        gm.HUD.Msg("Enemy Attack" + atkValue.ToString());
     }
     //Drop exp
     virtual public void DropEXP()

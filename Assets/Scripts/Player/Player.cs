@@ -137,6 +137,20 @@ public class Player : MonoBehaviour {
     public Weapon weapon;
     public Launcher launcher;
 
+    //Attack
+    private bool canFire;
+    public bool CanFire
+    {
+        get
+        {
+            return canFire;
+        }
+        set
+        {
+            canFire = value;
+        }
+    }
+
     //Other parameters
     private bool inRunColdTime;
     public bool InRunColdTime
@@ -160,14 +174,16 @@ public class Player : MonoBehaviour {
     //Start
     private void Start()
     {
-        launcher = Instantiate(launcher, gm.Slot.laucherSlot.transform.position, gm.Slot.laucherSlot.transform.rotation);
-        launcher.gameObject.transform.parent = gm.Slot.laucherSlot.transform;//Initialize as child of slot
+        launcher = Instantiate(launcher, gm.Slot.laucherSlot.position, gm.Slot.laucherSlot.rotation);
+        launcher.gameObject.transform.parent = gm.Slot.laucherSlot;//Initialize as child of slot
+        faceDirection = Vector3.right;
+        canFire = true;
     }
 
     //Update
     private void Update()
     {
-        if (Input.GetButtonDown("Fire"))
+        if (Input.GetButtonDown("Fire") && canFire)
             Fire();
 
         if (state.Equals(PlayerState.Running))
@@ -223,10 +239,6 @@ public class Player : MonoBehaviour {
     public void Upgrade()
     {
         gm.HUD.Msg("Upgrade!!");
-    }
-    private void Damaged()
-    {
-        Debug.Log("Damaged!"+hp.ToString());
     }
 
     private void Defence()
@@ -330,7 +342,7 @@ public class Player : MonoBehaviour {
             currentExp = exp - expForLv[currentLevel - 1];
             remainExp = expForLv[currentLevel] - currentExp;
             //HUD show information
-            gm.HUD.Msg("获得经验 " + _exp.ToString());
+            gm.HUD.Msg("Gain EXP:" + _exp.ToString());
         }
     }
 }

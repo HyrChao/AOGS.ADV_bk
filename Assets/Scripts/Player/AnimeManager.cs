@@ -10,6 +10,16 @@ public class AnimeManager : MonoBehaviour {
 
     //获取动画状态
     private Animator animator;
+    public Animator Animator
+    {
+        get
+        {
+            if (animator != null)
+                return animator;
+            else
+                return null;
+        }
+    }
     private GameManager gm;
     //private IKLookAt IKLook;
     public AnimatorStateInfo currentBaseState;

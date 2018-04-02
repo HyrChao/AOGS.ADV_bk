@@ -8,13 +8,12 @@ using System.Collections;
 public class IKController : MonoBehaviour
 {
     private Animator avator;
-    public Launcher launcher;
-    private Transform gunMesh;
+    private Launcher launcher;
     public bool ikActive = false;
     void Start()
     {
-        avator = GetComponent<Animator>();
-        gunMesh = launcher.transform.Find("GunMesh");
+        avator = AO.gm.AM.Animator;
+        launcher = AO.gm.Player.launcher;
     }
     void OnAnimatorIK(int layerIndex)
     {
@@ -22,14 +21,14 @@ public class IKController : MonoBehaviour
         {
             if (layerIndex == 0)
             {
-                if (launcher != null)
-                {
-                    Vector3 scale = launcher.transform.localScale* launcher.Load;
-                    gunMesh.localScale = scale;
-                }
+
             }
             if (layerIndex == 2)
             {
+                //if (launcher != null)
+                //{
+                //    launcher.transform.position = AO.gm.Slot.laucherLaunchSlot.position;
+                //}
 
                 if (launcher.leftHandPos != null)
                 {
