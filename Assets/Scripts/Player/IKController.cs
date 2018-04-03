@@ -17,6 +17,8 @@ public class IKController : MonoBehaviour
     }
     void OnAnimatorIK(int layerIndex)
     {
+        AO.gm.HUD.Msg("IKIKIKIKIK");
+
         if (avator)
         {
             if (layerIndex == 0)
@@ -29,6 +31,7 @@ public class IKController : MonoBehaviour
                 //{
                 //    launcher.transform.position = AO.gm.Slot.laucherLaunchSlot.position;
                 //}
+                AO.gm.HUD.Msg("IKIKIKIKIK");
 
                 if (launcher.leftHandPos != null)
                 {
