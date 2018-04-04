@@ -18,6 +18,7 @@ public class HUD : MonoBehaviour {
     
     private Text lvText;
     private Text gilText;
+    private Text ammoText;
     private Text msgText;
     
     private LinkedList<string> msg; //A string list for in-game msg    
@@ -43,6 +44,7 @@ public class HUD : MonoBehaviour {
 
         lvText = transform.Find("LV").GetComponent<Text>();
         gilText = transform.Find("GIL").GetComponent<Text>();
+        ammoText = transform.Find("Ammo").GetComponent<Text>();
         msgText = transform.Find("Msg").GetComponent<Text>();
 
     }
@@ -63,6 +65,7 @@ public class HUD : MonoBehaviour {
         lvText.text = "Lv." + gm.Player.LV.ToString();
         msgText.text = msg.First.Next.Next.Next.Next.Value + "\n" + msg.First.Next.Next.Next.Value + "\n" + msg.First.Next.Next.Value + "\n" + msg.First.Next.Value + "\n" + msg.First.Value;
         gilText.text = "GIL."+gm.Player.Gold.ToString();
+        ammoText.text = "Ammo::" + gm.Player.launcher.currentAmmmo.ToString();
 
     }
 

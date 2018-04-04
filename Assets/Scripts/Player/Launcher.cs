@@ -10,6 +10,16 @@ public class Launcher : MonoBehaviour {
     public Rocket rocket;
     public Transform rocketLaunchPos;
 
+    private int ammo;
+    public int currentAmmmo
+    {
+        get
+        {
+            return ammo;
+        }
+    }
+    private int maxAmmo = 100;
+
     private int damage=23;
     private float force = 1000f;
     private float coldTime = 0.5f;
@@ -17,46 +27,49 @@ public class Launcher : MonoBehaviour {
     public Transform leftHandPos;//IK left hand pos
     public Transform rightHandPos;//IK right hand pos
 
-    private float load = 0;//if or not loaded
+    private float load = 0f;//if or not loaded
     public float Load
     {
         get
         {
             return load;
         }
-        set
-        {
-            load = value;
-        }
     }
     
     public void Fire()
     {
         //load = Mathf.Lerp(0, 1, 0.5f);
-        load = 1;
+        load = 1f;
         AO.gm.Player.CanFire = false;
         AO.gm.Player.weapon.gameObject.SetActive(false);
         Invoke("FireDone", coldTime);
+
+        this.transform.parent = AO.gm.Slot.laucherLaunchSlot;
         this.transform.position = AO.gm.Slot.laucherLaunchSlot.position;
         this.transform.rotation = AO.gm.Slot.laucherLaunchSlot.rotation;
+
         Rocket newRocket = Instantiate(rocket, rocketLaunchPos.position, Quaternion.Euler(0,0,90)) as Rocket;
         newRocket.GetComponent<Rigidbody>().AddForce(force*AO.gm.Player.FaceDirection);
         newRocket.GetComponent<Rocket>().SetDamage(damage);
+
+        ammo--;
     }
 
     private void FireDone()
     {
         //load = Mathf.Lerp(1, 0, 0.5f);
-        load = 0;
+        load = 0f;
         AO.gm.Player.CanFire = true;
         AO.gm.Player.weapon.gameObject.SetActive(true);
+
+        this.transform.parent = AO.gm.Slot.laucherSlot;
         this.transform.position = AO.gm.Slot.laucherSlot.position;
         this.transform.rotation = AO.gm.Slot.laucherSlot.rotation;
     }
 
     private void Awake()
     {
-
+        ammo = maxAmmo;
     }
     private void Start()
     {

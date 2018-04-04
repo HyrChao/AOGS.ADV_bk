@@ -23,11 +23,15 @@ public class AnimeManager : MonoBehaviour {
     private GameManager gm;
     //private IKLookAt IKLook;
     public AnimatorStateInfo currentBaseState;
-    
-    void Start ()
+
+    private void Awake()
     {
         animator = transform.Find("PlayerMesh").GetComponent<Animator>();
         gm = AO.GetGameManager();
+    }
+
+    void Start ()
+    {
         //IKLook = transform.FindChild("PlayerMesh").GetComponent<IKLookAt>();
     }
     private void FixedUpdate()
