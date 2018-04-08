@@ -165,6 +165,7 @@ public class Enemy : MonoBehaviour {
                 {
                     StartCoroutine(MoveHitColdTime());
                     MoveAttack();
+                    
                 }
 
         }

@@ -18,6 +18,11 @@ public class GameManager : MonoBehaviour
         AO.animeManager = GameObject.Find("Player").GetComponent<AnimeManager>();
         AO.slot = GameObject.Find("Player").GetComponent<SlotManager>();
         AO.hud = GameObject.Find("HUD").GetComponent<HUD>();
+
+        AO.player.launcher = Instantiate(AO.player.launcher, AO.slot.laucherSlot.position, AO.slot.laucherSlot.rotation);
+        AO.player.launcher.gameObject.transform.parent = AO.slot.laucherSlot;//Initialize as child of launcher slot
+        AO.player.weapon = Instantiate(AO.player.weapon, AO.slot.weaponSlot.position, AO.slot.weaponSlot.rotation);
+        AO.player.weapon.gameObject.transform.parent = AO.slot.weaponSlot;//Initialize as child of weapon slot
     }
 
     void Start()

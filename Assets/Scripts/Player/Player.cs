@@ -171,10 +171,7 @@ public class Player : MonoBehaviour {
     //Start
     private void Start()
     {
-        launcher = Instantiate(launcher, AO.slot.laucherSlot.position, AO.slot.laucherSlot.rotation);
-        launcher.gameObject.transform.parent = AO.slot.laucherSlot;//Initialize as child of launcher slot
-        weapon = Instantiate(weapon, AO.slot.weaponSlot.position, AO.slot.weaponSlot.rotation);
-        weapon.gameObject.transform.parent = AO.slot.weaponSlot;//Initialize as child of weapon slot
+
         faceDirection = Vector3.right;
         canFire = true;
     }
