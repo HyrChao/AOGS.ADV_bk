@@ -20,14 +20,12 @@ public class AnimeManager : MonoBehaviour {
                 return null;
         }
     }
-    private GameManager gm;
-    //private IKLookAt IKLook;
+
     public AnimatorStateInfo currentBaseState;
 
     private void Awake()
     {
         animator = transform.Find("PlayerMesh").GetComponent<Animator>();
-        gm = AO.GetGameManager();
     }
 
     void Start ()
@@ -36,7 +34,7 @@ public class AnimeManager : MonoBehaviour {
     }
     private void FixedUpdate()
     {
-        animator.SetInteger("State", gm.Player.state.GetHashCode());
+        animator.SetInteger("State", AO.player.state.GetHashCode());
         //if (!animator.IsInTransition(0))
         //将游戏管理器中角色状态值赋予动画组件
         //currentBaseState = animator.GetCurrentAnimatorStateInfo(0);//更新动画状态

@@ -6,7 +6,7 @@ using UnityEngine;
 using System.Collections;
 
 public class Enemy : MonoBehaviour {
-    private GameManager gm;
+
     private Item[] item;//Drop items
     private int dropGold=20;
     private int dropEXP=30;
@@ -47,7 +47,6 @@ public class Enemy : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         rb.useGravity = true;
         centerYPos = rb.worldCenterOfMass.y;
-        gm = AO.GetGameManager();
     }
 
     void Start ()
@@ -76,8 +75,8 @@ public class Enemy : MonoBehaviour {
             DropEXP();
             DropGold();
             DropItem();
-            if (gm.Player != null)
-                gm.Player.EnemyKilled++;
+            if (AO.player != null)
+                AO.player.EnemyKilled++;
             spawnArea.CurrentEnemyCount--;
             Destroy(this.gameObject);
         }
@@ -107,11 +106,11 @@ public class Enemy : MonoBehaviour {
         if (isEncounting)
         {
             //Judge direction
-            if (transform.position.x - gm.Player.transform.position.x > 0)
+            if (transform.position.x - AO.player.transform.position.x > 0)
             {
                 leftEncounting = false;
             }
-            if (transform.position.x - gm.Player.transform.position.x < 0)
+            if (transform.position.x - AO.player.transform.position.x < 0)
             {
                 leftEncounting = true;
             }
@@ -161,8 +160,8 @@ public class Enemy : MonoBehaviour {
 
         if (collision.gameObject.tag == "Player")
         {
-            if(gm.Player!=null)
-                if (!gm.Player.state.Equals(PlayerState.Damaging)&& !inMoveHitColdTime)
+            if(AO.player!=null)
+                if (!AO.player.state.Equals(PlayerState.Damaging)&& !inMoveHitColdTime)
                 {
                     StartCoroutine(MoveHitColdTime());
                     MoveAttack();
@@ -183,13 +182,13 @@ public class Enemy : MonoBehaviour {
     virtual public void MoveAttack()
     {
         int atkValue = attack + (int)(attackAccuracy * 0.5 - Random.Range(0, attackAccuracy));
-        gm.Player.DropHP(atkValue);
-        gm.HUD.Msg("Enemy Attack" + atkValue.ToString());
+        AO.player.DropHP(atkValue);
+        AO.hud.Msg("Enemy Attack" + atkValue.ToString());
     }
     //Drop exp
     virtual public void DropEXP()
     {
-        gm.Player.AddEXP(dropEXP);
+        AO.player.AddEXP(dropEXP);
     }
     //Drop gold
     virtual public void DropGold()

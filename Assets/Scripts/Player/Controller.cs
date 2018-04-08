@@ -13,7 +13,6 @@ public class Controller : MonoBehaviour {
     //Referances
     private GameObject charaMesh;
     private CapsuleCollider col;
-    private GameManager gm;
     private Rigidbody rb;
 
     //Store axis value
@@ -55,7 +54,6 @@ public class Controller : MonoBehaviour {
     // Use this for initialization
     void Awake()
     {
-        gm = AO.GetGameManager();
         rb = GetComponent<Rigidbody>();
         rb.useGravity = true;
         charaMesh = GameObject.Find("PlayerMesh");
@@ -78,7 +76,7 @@ public class Controller : MonoBehaviour {
         moveAxisX = Input.GetAxis("Horizontal");
         moveAxisZ = Input.GetAxis("Vertical");
 
-        if (Input.GetButton("Run")&&canRun&&!gm.Player.InRunColdTime)
+        if (Input.GetButton("Run")&&canRun&&!AO.player.InRunColdTime)
         {
             speed = runSpeed;
         }
@@ -100,13 +98,13 @@ public class Controller : MonoBehaviour {
                 if (moveAxisX > 0f)                              //面向判定&改向
                 {
                     charaMesh.transform.rotation = frontRotation;
-                    gm.Player.FaceDirection = Vector3.right;
+                    AO.player.FaceDirection = Vector3.right;
                 }
 
                 if (moveAxisX < 0f)                              //面向判定&改向
                 {
                     charaMesh.transform.rotation = backRotation;
-                    gm.Player.FaceDirection = Vector3.left;
+                    AO.player.FaceDirection = Vector3.left;
                 }
             }
         }
@@ -174,21 +172,21 @@ public class Controller : MonoBehaviour {
         //Refresh gm.player states
         if (grounded)
         {
-            gm.Player.state = PlayerState.Idle;
+            AO.player.state = PlayerState.Idle;
             if (moveDir != Vector3.zero)
             {
-                gm.Player.state = PlayerState.Walking;
+                AO.player.state = PlayerState.Walking;
                 if (speed > moveSpeed)
-                    gm.Player.state = PlayerState.Running;
+                    AO.player.state = PlayerState.Running;
             }
         }
         else
         {
             if (rb.velocity.y <= 0)
-                gm.Player.state = PlayerState.Falling;
+                AO.player.state = PlayerState.Falling;
             else
             {
-                gm.Player.state = PlayerState.Jumping;
+                AO.player.state = PlayerState.Jumping;
             }
 
         }

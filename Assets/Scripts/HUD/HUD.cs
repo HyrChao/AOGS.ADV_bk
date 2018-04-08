@@ -9,8 +9,6 @@ using UnityEngine.UI;
 
 public class HUD : MonoBehaviour {
 
-    private GameManager gm;
-    
     private Slider hpSlider;
     private Slider mpSlider;
     private Slider spSlider;
@@ -36,7 +34,6 @@ public class HUD : MonoBehaviour {
         Msg("4 - -| wurara");
         Msg("5 - -| wurara");
 
-        gm = AO.GetGameManager();
         hpSlider = transform.Find("HPBar").GetComponent<Slider>();
         mpSlider = transform.Find("MPBar").GetComponent<Slider>();
         spSlider = transform.Find("SPBar").GetComponent<Slider>();
@@ -57,15 +54,15 @@ public class HUD : MonoBehaviour {
 
 	private void Update ()
     {
-        hpSlider.value = 100 * (gm.Player.HP / gm.Player.MaxHP);
-        mpSlider.value = 100 * (gm.Player.MP / gm.Player.MaxMP);
-        spSlider.value = 100 * (gm.Player.SP / gm.Player.MaxSP);
-        expSlider.value = 100 * ((float)gm.Player.GetExp() / (gm.Player.GetRemainExp() + gm.Player.GetExp()));
+        hpSlider.value = 100 * (AO.player.HP / AO.player.MaxHP);
+        mpSlider.value = 100 * (AO.player.MP / AO.player.MaxMP);
+        spSlider.value = 100 * (AO.player.SP / AO.player.MaxSP);
+        expSlider.value = 100 * ((float)AO.player.GetExp() / (AO.player.GetRemainExp() + AO.player.GetExp()));
 
-        lvText.text = "Lv." + gm.Player.LV.ToString();
+        lvText.text = "Lv." + AO.player.LV.ToString();
         msgText.text = msg.First.Next.Next.Next.Next.Value + "\n" + msg.First.Next.Next.Next.Value + "\n" + msg.First.Next.Next.Value + "\n" + msg.First.Next.Value + "\n" + msg.First.Value;
-        gilText.text = "GIL."+gm.Player.Gold.ToString();
-        ammoText.text = "Ammo::" + gm.Player.launcher.currentAmmmo.ToString();
+        gilText.text = "GIL."+AO.player.Gold.ToString();
+        ammoText.text = "Ammo::" + AO.player.launcher.currentAmmmo.ToString();
 
     }
 

@@ -40,16 +40,16 @@ public class Launcher : MonoBehaviour {
     {
         //load = Mathf.Lerp(0, 1, 0.5f);
         load = 1f;
-        AO.gm.Player.CanFire = false;
-        AO.gm.Player.weapon.gameObject.SetActive(false);
+        AO.player.CanFire = false;
+        AO.player.weapon.gameObject.SetActive(false);
         Invoke("FireDone", coldTime);
 
-        this.transform.parent = AO.gm.Slot.laucherLaunchSlot;
-        this.transform.position = AO.gm.Slot.laucherLaunchSlot.position;
-        this.transform.rotation = AO.gm.Slot.laucherLaunchSlot.rotation;
+        this.transform.parent = AO.slot.laucherLaunchSlot;
+        this.transform.position = AO.slot.laucherLaunchSlot.position;
+        this.transform.rotation = AO.slot.laucherLaunchSlot.rotation;
 
         Rocket newRocket = Instantiate(rocket, rocketLaunchPos.position, Quaternion.Euler(0,0,90)) as Rocket;
-        newRocket.GetComponent<Rigidbody>().AddForce(force*AO.gm.Player.FaceDirection);
+        newRocket.GetComponent<Rigidbody>().AddForce(force*AO.player.FaceDirection);
         newRocket.GetComponent<Rocket>().SetDamage(damage);
 
         ammo--;
@@ -59,12 +59,12 @@ public class Launcher : MonoBehaviour {
     {
         //load = Mathf.Lerp(1, 0, 0.5f);
         load = 0f;
-        AO.gm.Player.CanFire = true;
-        AO.gm.Player.weapon.gameObject.SetActive(true);
+        AO.player.CanFire = true;
+        AO.player.weapon.gameObject.SetActive(true);
 
-        this.transform.parent = AO.gm.Slot.laucherSlot;
-        this.transform.position = AO.gm.Slot.laucherSlot.position;
-        this.transform.rotation = AO.gm.Slot.laucherSlot.rotation;
+        this.transform.parent = AO.slot.laucherSlot;
+        this.transform.position = AO.slot.laucherSlot.position;
+        this.transform.rotation = AO.slot.laucherSlot.rotation;
     }
 
     private void Awake()

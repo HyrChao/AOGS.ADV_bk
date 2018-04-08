@@ -8,8 +8,6 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
 
-    private GameManager gm;
-
     public PlayerState state = PlayerState.None;
 
     //Tansform
@@ -165,7 +163,6 @@ public class Player : MonoBehaviour {
     private void Awake()
     {
         lv = new Level(100);
-        gm = AO.GetGameManager();
         //gun = 
         ResetPlayer();
         inRunColdTime = false;
@@ -174,10 +171,10 @@ public class Player : MonoBehaviour {
     //Start
     private void Start()
     {
-        launcher = Instantiate(launcher, gm.Slot.laucherSlot.position, gm.Slot.laucherSlot.rotation);
-        launcher.gameObject.transform.parent = gm.Slot.laucherSlot;//Initialize as child of launcher slot
-        weapon = Instantiate(weapon, gm.Slot.weaponSlot.position, gm.Slot.weaponSlot.rotation);
-        weapon.gameObject.transform.parent = gm.Slot.weaponSlot;//Initialize as child of weapon slot
+        launcher = Instantiate(launcher, AO.slot.laucherSlot.position, AO.slot.laucherSlot.rotation);
+        launcher.gameObject.transform.parent = AO.slot.laucherSlot;//Initialize as child of launcher slot
+        weapon = Instantiate(weapon, AO.slot.weaponSlot.position, AO.slot.weaponSlot.rotation);
+        weapon.gameObject.transform.parent = AO.slot.weaponSlot;//Initialize as child of weapon slot
         faceDirection = Vector3.right;
         canFire = true;
     }
@@ -197,10 +194,10 @@ public class Player : MonoBehaviour {
         }
 
         if (sp > 0)
-            gm.Controller.CanRun = true;
+            AO.controller.CanRun = true;
         else
         {
-            gm.Controller.CanRun = false;
+            AO.controller.CanRun = false;
             inRunColdTime = true;
         }
 
@@ -240,7 +237,7 @@ public class Player : MonoBehaviour {
     }
     public void Upgrade()
     {
-        gm.HUD.Msg("Upgrade!!");
+        AO.hud.Msg("Upgrade!!");
     }
 
     private void Defence()
@@ -332,19 +329,17 @@ public class Player : MonoBehaviour {
             //Check if get the max level
             if (currentLevel == maxLevel)
                 return;
-            if (gm == null)
-                gm = AO.GetGameManager();
             exp += _exp;
             //Check if upgrade
             if (exp - expForLv[currentLevel] >= 0)
             {
                 currentLevel++;
-                gm.Player.Upgrade();
+                AO.player.Upgrade();
             }
             currentExp = exp - expForLv[currentLevel - 1];
             remainExp = expForLv[currentLevel] - currentExp;
             //HUD show information
-            gm.HUD.Msg("Gain EXP:" + _exp.ToString());
+            AO.hud.Msg("Gain EXP:" + _exp.ToString());
         }
     }
 }

@@ -47,26 +47,96 @@ static class AO
         }
     }
 
-    public static GameManager gm;
-
-    public static GameManager GetGameManager()
+    private static GameManager _gm;
+    public static GameManager gm
     {
-        GameManager gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-        if (gm != null)
+        get
         {
-            return gm;
+            if (_gm == null)
+                return null;
+            else
+                return _gm;                   
         }
-        else
-            return null;
+        set
+        {
+            _gm = value;
+        }
     }
 
-    public static float BoolToFloat(bool boolean)
+    private static Player _player;
+    public static Player player
     {
-        if (boolean)
-            return 1f;
-        else
-            return 0f;
+        get
+        {
+            if (controller != null)
+                return _player;
+            else
+                return null;
+        }
+        set
+        {
+            _player = value;
+        }
     }
-
+    private static Controller _controller;
+    public static Controller controller
+    {
+        get
+        {
+            if (_controller != null)
+                return _controller;
+            else
+                return null;
+        }
+        set
+        {
+            _controller = value;
+        }
+    }
+    private static AnimeManager _animeManager;
+    public static AnimeManager animeManager
+    {
+        get
+        {
+            if (_animeManager != null)
+                return _animeManager;
+            else
+                return null;
+        }
+        set
+        {
+            _animeManager = value;
+        }
+    }
+    private static HUD _hud;
+    public static HUD hud
+    {
+        get
+        {
+            if (_hud != null)
+                return _hud;
+            else
+                return null;
+        }
+        set
+        {
+            _hud = value;
+        }
+    }
+    private static SlotManager _slot;
+    public static SlotManager slot
+    {
+        get
+        {
+            if (_slot != null)
+                return _slot;
+            else
+                return null;
+        }
+        set
+        {
+            _slot = value;
+        }
+    }
 }
 

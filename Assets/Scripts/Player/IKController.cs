@@ -11,12 +11,12 @@ public class IKController : MonoBehaviour
     private Launcher launcher;
     void Start()
     {
-        avator = AO.gm.AM.Animator;
-        launcher = AO.gm.Player.launcher;
+        avator = AO.animeManager.Animator;
+        launcher = AO.player.launcher;
     }
     void OnAnimatorIK(int layerIndex)
     {
-        AO.gm.HUD.Msg(launcher.currentAmmmo.ToString());
+        AO.hud.Msg(launcher.currentAmmmo.ToString());
         Debug.Log(launcher.ToString());
         if (avator)
         {
@@ -28,9 +28,9 @@ public class IKController : MonoBehaviour
             {
                 //if (launcher != null)
                 //{
-                //    launcher.transform.position = AO.gm.Slot.laucherLaunchSlot.position;
+                //    launcher.transform.position = AO.Slot.laucherLaunchSlot.position;
                 //}
-                //AO.gm.HUD.Msg("IKIKIKIKIK");
+                //AO.HUD.Msg("IKIKIKIKIK");
                 //Debug.Log(launcher.transform.position.ToString());
 
                 if (launcher.leftHandPos != null)
