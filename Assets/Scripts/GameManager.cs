@@ -9,6 +9,9 @@ public class GameManager : MonoBehaviour
 {
     private void Awake()
     {
+        //Setup fps
+        Application.targetFrameRate = 600;
+
         if(AO.gm == null)
         {
             AO.gm = this;

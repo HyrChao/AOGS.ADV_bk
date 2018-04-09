@@ -4,7 +4,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Camera : MonoBehaviour
+public class PlayerCamera : MonoBehaviour
 {
     public Transform pos;   //摄像机要跟随的人物
     private float smoothTime = 0.1f;  //摄像机平滑移动的时间

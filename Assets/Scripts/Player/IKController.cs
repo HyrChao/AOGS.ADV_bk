@@ -17,7 +17,6 @@ public class IKController : MonoBehaviour
     void OnAnimatorIK(int layerIndex)
     {
         //AO.hud.Msg(launcher.Load.ToString());
-        Debug.Log(launcher.Load.ToString());
         if (avator)
         {
             if (layerIndex == 0)
