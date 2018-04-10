@@ -3,6 +3,7 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
+		_NoiseTex ("Noise", 2D) = "white" {}
 	}
 	SubShader
 	{
@@ -33,6 +34,7 @@
 			};
 
 			sampler2D _MainTex;
+			sampler2D _NoiseTex;
 			float4 _MainTex_ST;
 			
 			v2f vert (appdata v)
@@ -46,12 +48,20 @@
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
+				float2 offset = float2 (
+					tex2D(_NoiseTex , float2 (i.vertex.y/300, 0)).r,
+					tex2D(_NoiseTex , float2 (0, i.vertex.x/300)).r
+					);
+
+				offset -= 0.5;
+				//offset /= 2;
+
 				// sample the texture
-				fixed4 col = tex2D(_MainTex, i.uv+float2(cos(i.vertex.y/30),sin(i.vertex.x/30)));
+				fixed4 col = tex2D(_MainTex, i.uv + offset);
 				// apply fog
+
 				UNITY_APPLY_FOG(i.fogCoord, col);
-				col.r = 0.5f;
-				
+				//col.r = 1;
 				return col;
 			}
 			ENDCG
