@@ -1,4 +1,4 @@
-﻿Shader "AO/ToonTest_unlit"
+﻿Shader "AO/UITest_unlit"
 {
 	Properties
 	{
