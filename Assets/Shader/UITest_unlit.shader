@@ -4,7 +4,9 @@
 	{
 		_MainTex ("Texture", 2D) = "white" {}
 		_NoiseTex ("Noise", 2D) = "white" {}
-		_Strenghth("Strenghth", float) = 0.2
+		_DistortionStrenghth("Distortion Strenghth", float) = 0.2
+		_DistortionSpread("Distortion Spread" , float) = 60
+		_TimeDamper("Time Damper", float) = 50
 	}
 	SubShader
 	{
@@ -38,7 +40,9 @@
 			sampler2D _MainTex;
 			sampler2D _NoiseTex;
 			float4 _MainTex_ST;
-			float _Strenghth;
+			float _DistortionStrenghth;
+			float _DistortionSpread;
+			float _TimeDamper;
 			
 			v2f vert (appdata v)
 			{
@@ -53,15 +57,15 @@
 			fixed4 frag (v2f i) : SV_Target
 			{
 				float2 offset = float2 (
-					tex2D(_NoiseTex , float2 (i.worldPosition.y/60 , 0)).r,
-					tex2D(_NoiseTex , float2 (0, i.worldPosition.x/60)).r
+					tex2D(_NoiseTex , float2 (i.worldPosition.y/ _DistortionSpread , _Time[1]/_TimeDamper)).r,
+					tex2D(_NoiseTex , float2 (_Time[1]/_TimeDamper, i.worldPosition.x/ _DistortionSpread)).r
 					);
 
 				offset -= 0.5;
 				//offset /= 2;
 
 				// sample the texture
-				fixed4 col = tex2D(_MainTex, i.uv + offset* _Strenghth);
+				fixed4 col = tex2D(_MainTex, i.uv + offset* _DistortionStrenghth);
 				// apply fog
 
 				UNITY_APPLY_FOG(i.fogCoord, col);
