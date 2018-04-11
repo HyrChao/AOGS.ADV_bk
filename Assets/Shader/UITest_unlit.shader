@@ -4,6 +4,7 @@
 	{
 		_MainTex ("Texture", 2D) = "white" {}
 		_NoiseTex ("Noise", 2D) = "white" {}
+		_Strenghth("Strenghth", float) = 0.2
 	}
 	SubShader
 	{
@@ -31,15 +32,18 @@
 				float2 uv : TEXCOORD0;
 				UNITY_FOG_COORDS(1)
 				float4 vertex : SV_POSITION;
+				float4 worldPosition : VERTEXWORDPOSITION;
 			};
 
 			sampler2D _MainTex;
 			sampler2D _NoiseTex;
 			float4 _MainTex_ST;
+			float _Strenghth;
 			
 			v2f vert (appdata v)
 			{
 				v2f o;
+				o.worldPosition = v.vertex;
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				UNITY_TRANSFER_FOG(o,o.vertex);
@@ -49,19 +53,19 @@
 			fixed4 frag (v2f i) : SV_Target
 			{
 				float2 offset = float2 (
-					tex2D(_NoiseTex , float2 (i.vertex.y/300, 0)).r,
-					tex2D(_NoiseTex , float2 (0, i.vertex.x/300)).r
+					tex2D(_NoiseTex , float2 (i.worldPosition.y/60 , 0)).r,
+					tex2D(_NoiseTex , float2 (0, i.worldPosition.x/60)).r
 					);
 
 				offset -= 0.5;
 				//offset /= 2;
 
 				// sample the texture
-				fixed4 col = tex2D(_MainTex, i.uv + offset);
+				fixed4 col = tex2D(_MainTex, i.uv + offset* _Strenghth);
 				// apply fog
 
 				UNITY_APPLY_FOG(i.fogCoord, col);
-				//col.r = 1;
+				//col.r = 0.7;
 				return col;
 			}
 			ENDCG
