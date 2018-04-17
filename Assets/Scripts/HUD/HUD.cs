@@ -34,15 +34,38 @@ public class HUD : MonoBehaviour {
         Msg("4 - -| wurara");
         Msg("5 - -| wurara");
 
-        hpSlider = transform.Find("HPBar").GetComponent<Slider>();
-        mpSlider = transform.Find("MPBar").GetComponent<Slider>();
-        spSlider = transform.Find("SPBar").GetComponent<Slider>();
-        expSlider = transform.Find("EXPBar").GetComponent<Slider>();
+        //Check current platform
 
-        lvText = transform.Find("LV").GetComponent<Text>();
-        gilText = transform.Find("GIL").GetComponent<Text>();
-        ammoText = transform.Find("Ammo").GetComponent<Text>();
-        msgText = transform.Find("Msg").GetComponent<Text>();
+        Transform platform = null;
+
+        if (AO.debug)
+        {
+            platform = transform.Find("Mobile");
+            platform.gameObject.SetActive(true);
+        }
+        else
+        {
+            if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
+            {
+                platform = transform.Find("PC");
+                platform.gameObject.SetActive(true);
+            }
+            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+            {
+                platform = transform.Find("Mobile");
+                platform.gameObject.SetActive(true);
+            }
+        }
+
+        hpSlider = platform.Find("HPBar").GetComponent<Slider>();
+        mpSlider = platform.Find("MPBar").GetComponent<Slider>();
+        spSlider = platform.Find("SPBar").GetComponent<Slider>();
+        expSlider = platform.Find("EXPBar").GetComponent<Slider>();
+
+        lvText = platform.Find("LV").GetComponent<Text>();
+        gilText = platform.Find("GIL").GetComponent<Text>();
+        ammoText = platform.Find("Ammo").GetComponent<Text>();
+        msgText = platform.Find("Msg").GetComponent<Text>();
 
     }
 
