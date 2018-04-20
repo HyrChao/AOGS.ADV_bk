@@ -18,7 +18,30 @@ public class HUD : MonoBehaviour {
     private Text gilText;
     private Text ammoText;
     private Text msgText;
-    
+
+    private Transform platform;
+
+    private TouchScreenControlHUD _touchControlHUD;
+    public TouchScreenControlHUD touchControlHUD
+    {
+        get
+        {
+            if (_touchControlHUD != null)
+                return _touchControlHUD;
+            else
+                return null;
+        }
+    }
+
+    bool _isTouchScreenGUI = false;
+    bool isTouchScreenGUI
+    {
+        get
+        {
+            return _isTouchScreenGUI;
+        }
+    }
+
     private LinkedList<string> msg; //A string list for in-game msg    
     public void Msg(string _msg)
     {
@@ -27,17 +50,7 @@ public class HUD : MonoBehaviour {
 
     private void Awake()
     {
-        msg = new LinkedList<string>();
-        Msg("1 - -| wurara");
-        Msg("2 - -| wurara");
-        Msg("3 - -| wurara");
-        Msg("4 - -| wurara");
-        Msg("5 - -| wurara");
-
         //Check current platform
-
-        Transform platform = null;
-
         if (AO.debug)
         {
             platform = transform.Find("Mobile");
@@ -49,11 +62,14 @@ public class HUD : MonoBehaviour {
             {
                 platform = transform.Find("PC");
                 platform.gameObject.SetActive(true);
+                _isTouchScreenGUI = false;
             }
             if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
             {
                 platform = transform.Find("Mobile");
                 platform.gameObject.SetActive(true);
+                _isTouchScreenGUI = true;
+                _touchControlHUD = platform.Find("TouchControlHUD").GetComponent<TouchScreenControlHUD>();
             }
         }
 
@@ -66,6 +82,13 @@ public class HUD : MonoBehaviour {
         gilText = platform.Find("GIL").GetComponent<Text>();
         ammoText = platform.Find("Ammo").GetComponent<Text>();
         msgText = platform.Find("Msg").GetComponent<Text>();
+
+        msg = new LinkedList<string>();
+        Msg("1 - -| wurara");
+        Msg("2 - -| wurara");
+        Msg("3 - -| wurara");
+        Msg("4 - -| wurara");
+        Msg("5 - -| wurara");
 
     }
 
