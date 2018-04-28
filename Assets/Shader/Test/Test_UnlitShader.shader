@@ -1,11 +1,8 @@
-﻿//2018-04-27 14:05:59
-//By Chao
-
-Shader "AO/Debug/Debug_Normal"
+﻿Shader "Unlit/Test_UnlitShader"
 {
 	Properties
 	{
-
+		_MainTex ("Texture", 2D) = "white" {}
 	}
 	SubShader
 	{
@@ -25,22 +22,24 @@ Shader "AO/Debug/Debug_Normal"
 			struct appdata
 			{
 				float4 vertex : POSITION;
-				float3 normal : NORMAL;
+				float2 uv : TEXCOORD0;
 			};
 
 			struct v2f
 			{
-				float3 normal : NORMAL;
+				float2 uv : TEXCOORD0;
 				UNITY_FOG_COORDS(1)
 				float4 vertex : SV_POSITION;
 			};
 
+			sampler2D _MainTex;
+			float4 _MainTex_ST;
 			
 			v2f vert (appdata v)
 			{
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.normal = normalize(v.normal);
+				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				UNITY_TRANSFER_FOG(o,o.vertex);
 				return o;
 			}
@@ -48,11 +47,9 @@ Shader "AO/Debug/Debug_Normal"
 			fixed4 frag (v2f i) : SV_Target
 			{
 				// sample the texture
-				//fixed4 col = tex2D(_MainTex, i.uv);
+				fixed4 col = tex2D(_MainTex, i.uv);
 				// apply fog
 				UNITY_APPLY_FOG(i.fogCoord, col);
-				fixed4 col;
-				col.rgb = abs(i.normal);
 				return col;
 			}
 			ENDCG

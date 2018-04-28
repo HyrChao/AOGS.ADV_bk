@@ -1,4 +1,7 @@
-﻿Shader "AO/Environment_Pbr_Worldproj" {
+﻿//2018-04-27 14:05:40
+//By Chao
+
+Shader "AO/Environment_Pbr_Worldproj" {
 	
 	Properties {
 		_Color ("Color", Color) = (1,1,1,1)
@@ -20,11 +23,10 @@
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
 
+		fixed4 _Color;
 		sampler2D _ProjTex;
-
 		half _Glossiness;
 		half _Metallic;
-		fixed4 _Color;
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -52,7 +54,8 @@
 
 		struct f2s 
 		{
-			float2 uv_MainTex;
+			float2 uv : TEXCOORD0;
+			fixed4 col : COLOR;
 		};
 
 		sampler2D _ProjTex;
@@ -63,7 +66,7 @@
 			v2f o;
 			o.vertex = UnityObjectToClipPos(v.vertex);
 			float3 worldPosition = mul(unity_ObjectToWorld, v.vertex).xyz;
-			o.normal = abs(v.normal);
+			o.normal = UnityObjectToWorldNormal(v.normal);
 			o.coodX.x = worldPosition.y;
 			o.coodX.y = worldPosition.z;
 			o.coodY.x = worldPosition.x;
@@ -73,35 +76,30 @@
 			return o;
 		}
 
-
-
-		fixed4 frag(v2f i) : SV_Target
+		f2s frag(v2f i) : SV_Target
 		{
 			// sample the texture
+			f2s o;
 			fixed4 sampleX = tex2D(_Color, float2(i.coodX.x, 1 - i.coodX.y));
-		fixed4 sampleY = tex2D(_Color, float2(i.coodY.x, 1 - i.coodY.y));
-		fixed4 sampleZ = tex2D(_Color, float2(i.coodZ.x, 1 - i.coodZ.y));
+			fixed4 sampleY = tex2D(_Color, float2(i.coodY.x, 1 - i.coodY.y));
+			fixed4 sampleZ = tex2D(_Color, float2(i.coodZ.x, 1 - i.coodZ.y));
 
-		fixed4 col = saturate(sampleX * abs(i.normal.x) + sampleY * abs(i.normal.y) + sampleZ * abs(i.normal.z));
-		//fixed4 col = sampleX * abs(i.normal.x) + sampleY * abs(i.normal.y) + sampleZ * abs(i.normal.z);
-		//fixed4 col = sampleX * i.normal.x + sampleY * i.normal.y + sampleZ * i.normal.z;
-		//fixed4 col = sampleX  + sampleY  + sampleZ;
-		//fixed4 col;
-		//col.rgb= i.normal * 0.5 + 0.5;
-		// apply fog
-		return col;
+			o.col = saturate(sampleX * i.normal.x*i.normal.x + sampleY * i.normal.y*i.normal.y + sampleZ * i.normal.z*i.normal.z);
+			o.uv = i.uv;
+			return o;
 		}
 
-		void surf (Input IN, inout SurfaceOutputStandard o) {
+		void surf (f2s i, inout SurfaceOutputStandard o) 
+		{
 			// Albedo comes from a texture tinted by color
-			fixed4 c = tex2D (_ProjTex, IN._ProjTex) * _Color;
-			o.Albedo = c.rgb;
+			o.Albedo = i.col;
 			// Metallic and smoothness come from slider variables
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;
 			o.Alpha = c.a;
 		}
 		ENDCG
+
 	}
 	FallBack "Diffuse"
 }

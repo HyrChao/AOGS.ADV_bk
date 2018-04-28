@@ -1,4 +1,7 @@
-﻿Shader "AO/Debug/Debug_Normal_Worldspace"
+﻿//2018-04-27 14:06:17
+//By Chao
+
+Shader "AO/Debug/Debug_Normal_Worldspace"
 {
 	Properties
 	{

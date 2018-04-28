@@ -1,4 +1,5 @@
-﻿
+﻿//2018-04-27 14:05:19
+//By Chao
 
 Shader "AO/Environment_Worldproj"
 {
@@ -45,7 +46,6 @@ Shader "AO/Environment_Worldproj"
 		float3 worldPosition = mul(unity_ObjectToWorld, v.vertex).xyz;
 		//Objectspace normal to worldspace
 		//o.normal = mul(unity_ObjectToWorld, float4(v.normal, 0.0)).xyx;
-		o.normal = v.normal;
 		o.normal = UnityObjectToWorldNormal(v.normal);
 		o.coodX.x = worldPosition.y;
 		o.coodX.y = worldPosition.z;
@@ -68,16 +68,12 @@ Shader "AO/Environment_Worldproj"
 	fixed4 sampleZ = tex2D(_ProjTex, float2(i.coodZ.x, 1-i.coodZ.y));
 
 	//fixed4 col = saturate(sampleX * abs(i.normal.x) + sampleY * abs(i.normal.y) + sampleZ * abs(i.normal.z));
-	//fixed4 col = saturate(sampleX * abs(i.normal.x) + sampleY * abs(i.normal.y) + sampleZ * abs(i.normal.z));
 	//fixed4 col = saturate(sampleX * i.normal.x + sampleY * i.normal.y + sampleZ * i.normal.z);
-	fixed4 col = (sampleX * i.normal.x*i.normal.x + sampleY * i.normal.y*i.normal.y + sampleZ * i.normal.z*i.normal.z);
+	fixed4 col = saturate(sampleX * i.normal.x*i.normal.x + sampleY * i.normal.y*i.normal.y + sampleZ * i.normal.z*i.normal.z);
+	//fixed4 col = (sampleX * i.normal.x*i.normal.x + sampleY * i.normal.y*i.normal.y + sampleZ * i.normal.z*i.normal.z);
 	//fixed4 col = sampleX * i.normal.x + sampleY * i.normal.y + sampleZ * i.normal.z;
 	//fixed4 col = sampleX  + sampleY  + sampleZ;
-	//fixed4 col;
-	//col.rgb = i.normal;
-	//col.rgb= i.normal * 0.5 + 0.5;
-	//col.rgb = abs(i.normal);
-	// apply fog
+
 	return col;
 	}
 		ENDCG
