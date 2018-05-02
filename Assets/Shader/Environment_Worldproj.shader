@@ -62,19 +62,19 @@ Shader "AO/Environment_Worldproj"
 	fixed4 frag(v2f i) : SV_Target
 	{
 
-	// sample the texture
-	fixed4 sampleX = tex2D(_ProjTex, float2(i.coodX.x, 1-i.coodX.y));
-	fixed4 sampleY = tex2D(_ProjTex, float2(i.coodY.x, 1-i.coodY.y));
-	fixed4 sampleZ = tex2D(_ProjTex, float2(i.coodZ.x, 1-i.coodZ.y));
+		// sample the texture
+		fixed4 sampleX = tex2D(_ProjTex, float2(i.coodX.x, 1-i.coodX.y));
+		fixed4 sampleY = tex2D(_ProjTex, float2(i.coodY.x, 1-i.coodY.y));
+		fixed4 sampleZ = tex2D(_ProjTex, float2(i.coodZ.x, 1-i.coodZ.y));
 
-	//fixed4 col = saturate(sampleX * abs(i.normal.x) + sampleY * abs(i.normal.y) + sampleZ * abs(i.normal.z));
-	//fixed4 col = saturate(sampleX * i.normal.x + sampleY * i.normal.y + sampleZ * i.normal.z);
-	fixed4 col = saturate(sampleX * i.normal.x*i.normal.x + sampleY * i.normal.y*i.normal.y + sampleZ * i.normal.z*i.normal.z);
-	//fixed4 col = (sampleX * i.normal.x*i.normal.x + sampleY * i.normal.y*i.normal.y + sampleZ * i.normal.z*i.normal.z);
-	//fixed4 col = sampleX * i.normal.x + sampleY * i.normal.y + sampleZ * i.normal.z;
-	//fixed4 col = sampleX  + sampleY  + sampleZ;
+		//fixed4 col = saturate(sampleX * abs(i.normal.x) + sampleY * abs(i.normal.y) + sampleZ * abs(i.normal.z));
+		//fixed4 col = saturate(sampleX * i.normal.x + sampleY * i.normal.y + sampleZ * i.normal.z);
+		fixed4 col = saturate(sampleX * i.normal.x*i.normal.x + sampleY * i.normal.y*i.normal.y + sampleZ * i.normal.z*i.normal.z);
+		//fixed4 col = (sampleX * i.normal.x*i.normal.x + sampleY * i.normal.y*i.normal.y + sampleZ * i.normal.z*i.normal.z);
+		//fixed4 col = sampleX * i.normal.x + sampleY * i.normal.y + sampleZ * i.normal.z;
+		//fixed4 col = sampleX  + sampleY  + sampleZ;
 
-	return col;
+		return col;
 	}
 		ENDCG
 	}

@@ -9,6 +9,11 @@ using UnityEngine.UI;
 
 public class HUD : MonoBehaviour {
 
+    //debug
+    public bool debugMobileGUI = false;
+
+    private Transform playerStates;
+
     private Slider hpSlider;
     private Slider mpSlider;
     private Slider spSlider;
@@ -51,7 +56,7 @@ public class HUD : MonoBehaviour {
     private void Awake()
     {
         //Check current platform
-        if (AO.debug)
+        if (debugMobileGUI)
         {
             platform = transform.Find("Mobile");
             platform.gameObject.SetActive(true);
@@ -73,15 +78,18 @@ public class HUD : MonoBehaviour {
             }
         }
 
-        hpSlider = platform.Find("HPBar").GetComponent<Slider>();
-        mpSlider = platform.Find("MPBar").GetComponent<Slider>();
-        spSlider = platform.Find("SPBar").GetComponent<Slider>();
-        expSlider = platform.Find("EXPBar").GetComponent<Slider>();
-
-        lvText = platform.Find("LV").GetComponent<Text>();
-        gilText = platform.Find("GIL").GetComponent<Text>();
-        ammoText = platform.Find("Ammo").GetComponent<Text>();
         msgText = platform.Find("Msg").GetComponent<Text>();
+
+        playerStates = platform.Find("PlayerStates").transform;
+
+        hpSlider = playerStates.Find("HPBar").GetComponent<Slider>();
+        mpSlider = playerStates.Find("MPBar").GetComponent<Slider>();
+        spSlider = playerStates.Find("SPBar").GetComponent<Slider>();
+        expSlider = playerStates.Find("EXPBar").GetComponent<Slider>();
+        lvText = playerStates.Find("LV").GetComponent<Text>();
+        gilText = playerStates.Find("GIL").GetComponent<Text>();
+        ammoText = playerStates.Find("Ammo").GetComponent<Text>();
+
 
         msg = new LinkedList<string>();
         Msg("1 - -| wurara");
@@ -94,8 +102,8 @@ public class HUD : MonoBehaviour {
 
     private void Start ()
     {
-		
-	}
+
+    }
 	
 
 	private void Update ()
