@@ -20,6 +20,8 @@ Shader "AO/Environment_Worldproj"
 
 		#include "UnityCG.cginc"
 
+	uniform sampler2D _ProjTex;
+
 	struct appdata
 	{
 		float4 vertex : POSITION;
@@ -37,7 +39,6 @@ Shader "AO/Environment_Worldproj"
 		float2 coodZ : COODZ;
 	};
 
-	sampler2D _ProjTex;
 	//float4 _ProjTex_ST;
 
 	v2f vert(appdata v)

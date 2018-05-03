@@ -117,6 +117,7 @@ Shader "UnityChanToonShader/Toon_DoubleShadeWithFeather" {
             #pragma multi_compile_fog
             #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal xboxone ps4 switch
             #pragma target 3.0
+
             uniform float _ShadeColor_Step;
             uniform float4 _1st_ShadeColor;
             uniform float4 _2nd_ShadeColor;

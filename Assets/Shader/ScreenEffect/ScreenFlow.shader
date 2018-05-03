@@ -17,6 +17,8 @@
 			
 			#include "UnityCG.cginc"
 
+			uniform sampler2D _MainTex;
+
 			struct appdata
 			{
 				float4 vertex : POSITION;
@@ -37,7 +39,6 @@
 				return o;
 			}
 			
-			sampler2D _MainTex;
 
 			fixed4 frag (v2f i) : SV_Target
 			{
