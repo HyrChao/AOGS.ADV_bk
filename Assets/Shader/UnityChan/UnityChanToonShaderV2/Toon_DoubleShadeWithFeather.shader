@@ -113,7 +113,7 @@ Shader "UnityChanToonShader/Toon_DoubleShadeWithFeather" {
             #include "UnityCG.cginc"
             #include "AutoLight.cginc"
             #include "Lighting.cginc"
-            #pragma multi_compile_fwdbase_fullshadows
+            #pragma multi_compile_fwdbase_fullshadows	//https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html
             #pragma multi_compile_fog
             #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal xboxone ps4 switch
             #pragma target 3.0
