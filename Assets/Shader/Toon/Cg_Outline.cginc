@@ -23,6 +23,7 @@
             uniform fixed _Is_BlendOutlineWithBaseColor;
             uniform fixed _Is_OutlineReceiveLightColor;
             uniform float _Offset_Depth;
+
             struct VertexInput {
                 float4 vertex : POSITION;
                 float3 normal : NORMAL;
@@ -32,6 +33,7 @@
                 float4 pos : SV_POSITION;
                 float2 uv0 : TEXCOORD0;
             };
+
             VertexOutput vert (VertexInput v) {
                 VertexOutput o = (VertexOutput)0;
                 o.uv0 = v.texcoord0;
