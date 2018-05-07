@@ -47,6 +47,7 @@
                 o.pos.z = o.pos.z + _Offset_Depth*viewDirectionVP.z;
                 return o;
             }
+
             float4 frag(VertexOutput i, float facing : VFACE) : SV_Target{
                 float isFrontFace = ( facing >= 0 ? 1 : 0 );
                 float faceSign = ( facing >= 0 ? 1 : -1 );
@@ -57,4 +58,5 @@
                 float3 outputColor = lerp( _Outline_Color.rgb, (_Outline_Color.rgb*baseColor*baseColor), _Is_BlendOutlineWithBaseColor );
                 return fixed4(outputColor,0);
             }
+
 // UCTS_Outline.cginc ここまで.

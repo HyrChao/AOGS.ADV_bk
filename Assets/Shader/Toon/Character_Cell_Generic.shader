@@ -22,6 +22,10 @@ Shader "AO/Character/Cell_Generic"
 		[MaterialToggle] _Is_NormalMapLighting("_Is_NormalMapLighting", Float) = 0
         [MaterialToggle] _Is_EnableSystemShadow ("_Is_EnableSystemShadow", Float ) = 1
 		_NormalMap("NormalMap", 2D) = "bump" {}
+		_1st_ShadeMap("1st_ShadeMap", 2D) = "white" {}
+		_1st_ShadeColor("1st_ShadeColor", Color) = (1,1,1,1)
+		_2nd_ShadeMap("2nd_ShadeMap", 2D) = "white" {}
+		_2nd_ShadeColor("2nd_ShadeColor", Color) = (1,1,1,1)
 		_BaseColor_Step("BaseColor_Step", Range(0, 1)) = 0.6
 		_BaseShade_Feather("Base/Shade_Feather", Range(0.0001, 1)) = 0.0001
 		_Tweak_SystemShadowsLevel("Tweak_SystemShadowsLevel", Range(-0.5, 0.5)) = 0
@@ -109,7 +113,10 @@ Shader "AO/Character/Cell_Generic"
 			uniform float _BaseShade_Feather;
 			uniform float _Tweak_SystemShadowsLevel;
 			uniform float _ShadeColor_Step;
-
+			uniform float4 _1st_ShadeColor;
+			uniform sampler2D _1st_ShadeMap; uniform float4 _1st_ShadeMap_ST;
+			uniform float4 _2nd_ShadeColor;
+			uniform sampler2D _2nd_ShadeMap; uniform float4 _2nd_ShadeMap_ST;
 
 			VertexOutput vert(VertexInput v) {
 				VertexOutput o = (VertexOutput)0;
@@ -134,69 +141,79 @@ Shader "AO/Character/Cell_Generic"
 				float3 normalDirection = normalize(mul(normalMapVar, tangentTransform)); // Perturbed normals
 				float3 lightDirection = normalize(lerp(_WorldSpaceLightPos0.xyz, _WorldSpaceLightPos0.xyz - i.posWorld.xyz,_WorldSpaceLightPos0.w));  //_WorldSpaceLightPos0.w  0 paral light 1 spot light
 				float3 halfDirection = normalize(viewDirection + lightDirection);
-				//Light setup:
+
+				//Light setup
+
+				//Base color
 				float attenuation = LIGHT_ATTENUATION(i);
 				float4 baseMapColor = tex2D(_BaseMap,TRANSFORM_TEX(i.uv0, _BaseMap));
 				float3 baseColor = (_BaseColor.rgb*baseMapColor.rgb);
-				float3 baseColor = lerp(baseColor, (baseColor*_LightColor0.rgb), _Is_LightColor);//Blend basecolor with light color.
-
+				baseColor = lerp(baseColor, (baseColor*_LightColor0.rgb), _Is_LightColor);//Blend basecolor with light color.
+				//Setup first ShadeColor
 				float4 firstShadeMapVar = tex2D(_1st_ShadeMap,TRANSFORM_TEX(i.uv0, _1st_ShadeMap));//Control color in shadow part
 				float3 firstShadeColor = (_1st_ShadeColor.rgb*firstShadeMapVar.rgb);
-				float3 firstShadeColor = lerp(firstShadeColor, (firstShadeColor*_LightColor0.rgb), _Is_LightColor);
-
+				firstShadeColor = lerp(firstShadeColor, (firstShadeColor*_LightColor0.rgb), _Is_LightColor);
+				//Setup second ShadeColor
 				float4 secondShadeMapVar = tex2D(_2nd_ShadeMap,TRANSFORM_TEX(i.uv0, _2nd_ShadeMap));
 				float3 secondShadeColor = (_2nd_ShadeColor.rgb*secondShadeMapVar.rgb);
-				float3 secondShadeColor = lerp(secondShadeColor, (secondShadeColor*_LightColor0.rgb), _Is_LightColor);
-
+				secondShadeColor = lerp(secondShadeColor, (secondShadeColor*_LightColor0.rgb), _Is_LightColor);
+				//Shadow
 				float incidentAngle = 0.5*dot(lerp(i.normalDir, normalDirection, _Is_NormalMapLighting),lightDirection) + 0.5;  //Cos(incidentAngle), change value from [-1.1] to [0,1]
-				float finalShadowSample = saturate(1.0 +(lerp(incidentAngle, (incidentAngle*saturate(attenuation*0.5 + 0.5 + _Tweak_SystemShadowsLevel), _Is_EnableSystemShadow) - _BaseColor_Step + _BaseShade_Feather) - 1.0) / _BaseShade_Feather);
-
-				float3 node_1702 = lerp(baseColor,lerp(firstShadeColor, secondShadeColor,saturate(1.0 + incidentAngle / _ShadeColor_Step)),finalShadowSample); // Final Color
-				float4 _Set_HighColorMask_var = tex2D(_Set_HighColorMask,TRANSFORM_TEX(i.uv0, _Set_HighColorMask)); // HighColorMask
-				float node_1331 = 0.5*dot(halfDirection,lerp(i.normalDir, normalDirection, _Is_NormalMapToHighColor)) + 0.5; //  Specular
-				float node_5489 = (saturate((_Set_HighColorMask_var.g + _Tweak_HighColorMaskLevel))*lerp((1.0 - step(node_1331,(1.0 - _HighColor_Power))), pow(node_1331,exp2(lerp(11,1,_HighColor_Power))), _Is_SpecularToHighColor));
-				float3 node_5205 = (lerp(_HighColor.rgb, (_HighColor.rgb*_LightColor0.rgb), _Is_LightColor_HighColor)*node_5489);
-				float node_2595 = finalShadowSample;
-				float3 Set_HighColor = (lerp(saturate((node_1702 - node_5489)), node_1702, _Is_BlendAddToHiColor) + lerp(node_5205, (node_5205*((1.0 - node_2595) + (node_2595*_TweakHighColorOnShadow))), _Is_UseTweakHighColorOnShadow));
-				float3 node_2379 = Set_HighColor;
-				float4 _Set_RimLightMask_var = tex2D(_Set_RimLightMask,TRANSFORM_TEX(i.uv0, _Set_RimLightMask)); // RimLightMask
-				float3 _Is_LightColor_RimLight_var = lerp(_RimLightColor.rgb, (_RimLightColor.rgb*_LightColor0.rgb), _Is_LightColor_RimLight);
-				float node_2652 = (1.0 - dot(lerp(i.normalDir, normalDirection, _Is_NormalMapToRimLight),viewDirection));
-				float node_7879 = pow(node_2652,exp2(lerp(3,0,_RimLight_Power)));
-				float node_4535 = 1.0;
-				float node_2699 = 0.0;
-				float node_8305 = saturate(lerp((node_2699 + ((node_7879 - _RimLight_InsideMask) * (node_4535 - node_2699)) / (node_4535 - _RimLight_InsideMask)), step(_RimLight_InsideMask,node_7879), _RimLight_FeatherOff));
-				float node_8429 = 0.5*dot(i.normalDir,lightDirection) + 0.5;
-				float3 _LightDirection_MaskOn_var = lerp((_Is_LightColor_RimLight_var*node_8305), (_Is_LightColor_RimLight_var*saturate((node_8305 - ((1.0 - node_8429) + _Tweak_LightDirection_MaskLevel)))), _LightDirection_MaskOn);
-				float node_8113 = pow(node_2652,exp2(lerp(3,0,_Ap_RimLight_Power)));
-				float3 Set_RimLight = (saturate((_Set_RimLightMask_var.g + _Tweak_RimLightMaskLevel))*lerp(_LightDirection_MaskOn_var, (_LightDirection_MaskOn_var + (lerp(_Ap_RimLightColor.rgb, (_Ap_RimLightColor.rgb*_LightColor0.rgb), _Is_LightColor_Ap_RimLight)*saturate((lerp((node_2699 + ((node_8113 - _RimLight_InsideMask) * (node_4535 - node_2699)) / (node_4535 - _RimLight_InsideMask)), step(_RimLight_InsideMask,node_8113), _Ap_RimLight_FeatherOff) - (saturate(node_8429) + _Tweak_LightDirection_MaskLevel))))), _Add_Antipodean_RimLight));
-				float3 _RimLight_var = lerp(node_2379, (node_2379 + Set_RimLight), _RimLight);
-				float node_254_ang = (_Rotate_MatCapUV*3.141592654);
-				float node_254_spd = 1.0;
-				float node_254_cos = cos(node_254_spd*node_254_ang);
-				float node_254_sin = sin(node_254_spd*node_254_ang);
-				float2 node_254_piv = float2(0.5,0.5);
-				float node_5552_ang = (_Rotate_NormalMapForMatCapUV*3.141592654);
-				float node_5552_spd = 1.0;
-				float node_5552_cos = cos(node_5552_spd*node_5552_ang);
-				float node_5552_sin = sin(node_5552_spd*node_5552_ang);
-				float2 node_5552_piv = float2(0.5,0.5);
-				float2 node_5552 = (mul(i.uv0 - node_5552_piv,float2x2(node_5552_cos, -node_5552_sin, node_5552_sin, node_5552_cos)) + node_5552_piv);
-				float3 _NormalMapForMatCap_var = UnpackNormal(tex2D(_NormalMapForMatCap,TRANSFORM_TEX(node_5552, _NormalMapForMatCap)));
-				float node_1482 = 0.0;
-				float node_7689 = (node_1482 + _Tweak_MatCapUV);
-				float node_2941 = 1.0;
-				float2 node_254 = (mul((node_1482 + (((mul(UNITY_MATRIX_V, float4(lerp(i.normalDir, mul(_NormalMapForMatCap_var.rgb, tangentTransform).xyz.rgb, _Is_NormalMapForMatCap),0)).xyz.rgb.rg*0.5 + 0.5) - node_7689) * (node_2941 - node_1482)) / ((node_2941 - _Tweak_MatCapUV) - node_7689)) - node_254_piv,float2x2(node_254_cos, -node_254_sin, node_254_sin, node_254_cos)) + node_254_piv);
-				float4 _MatCap_Sampler_var = tex2D(_MatCap_Sampler,TRANSFORM_TEX(node_254, _MatCap_Sampler));
-				float3 node_2280 = (_MatCap_Sampler_var.rgb*_MatCapColor.rgb);
-				float3 _Is_LightColor_MatCap_var = lerp(node_2280, (node_2280*_LightColor0.rgb), _Is_LightColor_MatCap);
-				float node_2829 = finalShadowSample;
-				float3 Set_MatCap = lerp(_Is_LightColor_MatCap_var, (_Is_LightColor_MatCap_var*((1.0 - node_2829) + (node_2829*_TweakMatCapOnShadow))), _Is_UseTweakMatCapOnShadow);
-				float3 node_4172 = Set_MatCap;
-				float3 finalColor = saturate((1.0 - (1.0 - saturate(lerp(_RimLight_var, lerp((_RimLight_var*node_4172), (_RimLight_var + node_4172), _Is_BlendAddToMatCap), _MatCap)))*(1.0 - (DecodeLightProbe(normalDirection)*_GI_Intensity))));
+				float finalShadowSample = saturate(1.0 +(lerp(incidentAngle, incidentAngle*saturate(attenuation*0.5 + 0.5 + _Tweak_SystemShadowsLevel), _Is_EnableSystemShadow) - _BaseColor_Step + _BaseShade_Feather) - 1.0) / _BaseShade_Feather;
+				
+				// Final Color
+				float3 finalColor = lerp(baseColor,lerp(firstShadeColor, secondShadeColor,saturate(1.0 + incidentAngle / _ShadeColor_Step)),finalShadowSample); 
 				fixed4 finalRGBA = fixed4(finalColor * 1,0);
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
+
+
+				//float4 _Set_HighColorMask_var = tex2D(_Set_HighColorMask,TRANSFORM_TEX(i.uv0, _Set_HighColorMask)); // HighColorMask
+				//float node_1331 = 0.5*dot(halfDirection,lerp(i.normalDir, normalDirection, _Is_NormalMapToHighColor)) + 0.5; //  Specular
+
+				//float node_5489 = (saturate((_Set_HighColorMask_var.g + _Tweak_HighColorMaskLevel))*lerp((1.0 - step(node_1331,(1.0 - _HighColor_Power))), pow(node_1331,exp2(lerp(11,1,_HighColor_Power))), _Is_SpecularToHighColor));
+				//float3 node_5205 = (lerp(_HighColor.rgb, (_HighColor.rgb*_LightColor0.rgb), _Is_LightColor_HighColor)*node_5489);
+				//float node_2595 = finalShadowSample;
+				//float3 Set_HighColor = (lerp(saturate((node_1702 - node_5489)), node_1702, _Is_BlendAddToHiColor) + lerp(node_5205, (node_5205*((1.0 - node_2595) + (node_2595*_TweakHighColorOnShadow))), _Is_UseTweakHighColorOnShadow));
+				//float3 node_2379 = Set_HighColor;
+				//float4 _Set_RimLightMask_var = tex2D(_Set_RimLightMask,TRANSFORM_TEX(i.uv0, _Set_RimLightMask)); // RimLightMask
+				//float3 _Is_LightColor_RimLight_var = lerp(_RimLightColor.rgb, (_RimLightColor.rgb*_LightColor0.rgb), _Is_LightColor_RimLight);
+				//float node_2652 = (1.0 - dot(lerp(i.normalDir, normalDirection, _Is_NormalMapToRimLight),viewDirection));
+				//float node_7879 = pow(node_2652,exp2(lerp(3,0,_RimLight_Power)));
+				//float node_4535 = 1.0;
+				//float node_2699 = 0.0;
+				//float node_8305 = saturate(lerp((node_2699 + ((node_7879 - _RimLight_InsideMask) * (node_4535 - node_2699)) / (node_4535 - _RimLight_InsideMask)), step(_RimLight_InsideMask,node_7879), _RimLight_FeatherOff));
+				//float node_8429 = 0.5*dot(i.normalDir,lightDirection) + 0.5;
+				//float3 _LightDirection_MaskOn_var = lerp((_Is_LightColor_RimLight_var*node_8305), (_Is_LightColor_RimLight_var*saturate((node_8305 - ((1.0 - node_8429) + _Tweak_LightDirection_MaskLevel)))), _LightDirection_MaskOn);
+				//float node_8113 = pow(node_2652,exp2(lerp(3,0,_Ap_RimLight_Power)));
+				//float3 Set_RimLight = (saturate((_Set_RimLightMask_var.g + _Tweak_RimLightMaskLevel))*lerp(_LightDirection_MaskOn_var, (_LightDirection_MaskOn_var + (lerp(_Ap_RimLightColor.rgb, (_Ap_RimLightColor.rgb*_LightColor0.rgb), _Is_LightColor_Ap_RimLight)*saturate((lerp((node_2699 + ((node_8113 - _RimLight_InsideMask) * (node_4535 - node_2699)) / (node_4535 - _RimLight_InsideMask)), step(_RimLight_InsideMask,node_8113), _Ap_RimLight_FeatherOff) - (saturate(node_8429) + _Tweak_LightDirection_MaskLevel))))), _Add_Antipodean_RimLight));
+				//float3 _RimLight_var = lerp(node_2379, (node_2379 + Set_RimLight), _RimLight);
+				//float node_254_ang = (_Rotate_MatCapUV*3.141592654);
+				//float node_254_spd = 1.0;
+				//float node_254_cos = cos(node_254_spd*node_254_ang);
+				//float node_254_sin = sin(node_254_spd*node_254_ang);
+				//float2 node_254_piv = float2(0.5,0.5);
+				//float node_5552_ang = (_Rotate_NormalMapForMatCapUV*3.141592654);
+				//float node_5552_spd = 1.0;
+				//float node_5552_cos = cos(node_5552_spd*node_5552_ang);
+				//float node_5552_sin = sin(node_5552_spd*node_5552_ang);
+				//float2 node_5552_piv = float2(0.5,0.5);
+				//float2 node_5552 = (mul(i.uv0 - node_5552_piv,float2x2(node_5552_cos, -node_5552_sin, node_5552_sin, node_5552_cos)) + node_5552_piv);
+				//float3 _NormalMapForMatCap_var = UnpackNormal(tex2D(_NormalMapForMatCap,TRANSFORM_TEX(node_5552, _NormalMapForMatCap)));
+				//float node_1482 = 0.0;
+				//float node_7689 = (node_1482 + _Tweak_MatCapUV);
+				//float node_2941 = 1.0;
+				//float2 node_254 = (mul((node_1482 + (((mul(UNITY_MATRIX_V, float4(lerp(i.normalDir, mul(_NormalMapForMatCap_var.rgb, tangentTransform).xyz.rgb, _Is_NormalMapForMatCap),0)).xyz.rgb.rg*0.5 + 0.5) - node_7689) * (node_2941 - node_1482)) / ((node_2941 - _Tweak_MatCapUV) - node_7689)) - node_254_piv,float2x2(node_254_cos, -node_254_sin, node_254_sin, node_254_cos)) + node_254_piv);
+				//float4 _MatCap_Sampler_var = tex2D(_MatCap_Sampler,TRANSFORM_TEX(node_254, _MatCap_Sampler));
+				//float3 node_2280 = (_MatCap_Sampler_var.rgb*_MatCapColor.rgb);
+				//float3 _Is_LightColor_MatCap_var = lerp(node_2280, (node_2280*_LightColor0.rgb), _Is_LightColor_MatCap);
+				//float node_2829 = finalShadowSample;
+				//float3 Set_MatCap = lerp(_Is_LightColor_MatCap_var, (_Is_LightColor_MatCap_var*((1.0 - node_2829) + (node_2829*_TweakMatCapOnShadow))), _Is_UseTweakMatCapOnShadow);
+				//float3 node_4172 = Set_MatCap;
+				//float3 finalColor = saturate((1.0 - (1.0 - saturate(lerp(_RimLight_var, lerp((_RimLight_var*node_4172), (_RimLight_var + node_4172), _Is_BlendAddToMatCap), _MatCap)))*(1.0 - (DecodeLightProbe(normalDirection)*_GI_Intensity))));
+				//fixed4 finalRGBA = fixed4(finalColor * 1,0);
+				//UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
+				//return finalRGBA;
 			}
 
 			ENDCG
