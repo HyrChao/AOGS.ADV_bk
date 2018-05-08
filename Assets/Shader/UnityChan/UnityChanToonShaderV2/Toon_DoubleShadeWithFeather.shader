@@ -116,7 +116,7 @@ Shader "UnityChanToonShader/Toon_DoubleShadeWithFeather" {
             #pragma multi_compile_fwdbase_fullshadows	//https://docs.unity3d.com/Manual/SL-MultipleProgramVariants.html
             #pragma multi_compile_fog
             #pragma only_renderers d3d9 d3d11 glcore gles gles3 metal xboxone ps4 switch
-            #pragma target 3.0
+            #pragma target 3.0							//https://docs.unity3d.com/Manual/SL-ShaderCompileTargets.html
 
             uniform float _ShadeColor_Step;
             uniform float4 _1st_ShadeColor;
@@ -249,7 +249,9 @@ Shader "UnityChanToonShader/Toon_DoubleShadeWithFeather" {
                 float node_8323 = 1.0;
                 float2 node_1237 = Set_UV0;
                 float4 _Set_1st_ShadePosition_var = tex2D(_Set_1st_ShadePosition,TRANSFORM_TEX(node_1237, _Set_1st_ShadePosition));
-                float Set_FinalShadowSample = saturate((node_8323 + ( (lerp( node_4315, (node_4315*saturate(((attenuation*node_3494)+node_3494+_Tweak_SystemShadowsLevel))), _Set_SystemShadowsToBase ) - node_583) * ((1.0 - _Set_1st_ShadePosition_var.rgb).r - node_8323) ) / (_BaseColor_Step - node_583)));
+                float Set_FinalShadowSample = saturate(
+					(node_8323 + ( (lerp( node_4315, (node_4315*saturate(((attenuation*node_3494)+node_3494+_Tweak_SystemShadowsLevel))), _Set_SystemShadowsToBase ) - node_583) * ((1.0 - _Set_1st_ShadePosition_var.rgb).r - node_8323) ) / (_BaseColor_Step - node_583))
+				);
                 float3 node_1702 = lerp(Set_BaseColor,lerp(Set_1st_ShadeColor,Set_2nd_ShadeColor,saturate((node_9309 + ( (node_4315 - node_2294) * ((1.0 - _Set_2nd_ShadePosition_var.rgb).r - node_9309) ) / (_ShadeColor_Step - node_2294)))),Set_FinalShadowSample); // Final Color
                 float2 node_5701 = Set_UV0;
                 float4 _Set_HighColorMask_var = tex2D(_Set_HighColorMask,TRANSFORM_TEX(node_5701, _Set_HighColorMask)); // HighColorMask
