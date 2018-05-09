@@ -15,11 +15,14 @@ Shader "AO/Character/Cell_Generic"
 		//Shadow & Light related
 		[MaterialToggle] _Is_NormalMapLighting("Use NormalMap", Float) = 0
 		[MaterialToggle] _Is_LightColor("Use LightColor", Float) = 1
+		_BaseShade_Feather("BaseShade Feather", Range(0.0001, 1)) = 0.0001
+		_Contrast("Contrast",Range(0.0001,0.9999)) = 0.0001
+
 		_ShadeColor_Step("ShadeColor Step", Range(0, 1)) = 0.4
 		_1st_ShadeColor("1st ShadeColor", Color) = (1,1,1,1)
 		_2nd_ShadeColor("2nd ShadeColor", Color) = (1,1,1,1)
-		_ShadeMap("2nd ShadeMap", 2D) = "white" {}
-		_BaseShade_Feather("BaseShade Feather", Range(0.0001, 1)) = 0.0001
+		[MaterialToggle] _Is_UseShadeMap("Use ShadeMap", Float) = 0
+		_ShadeMap("ShadeMap", 2D) = "white" {}
 		[MaterialToggle] _Is_EnableSystemShadow("Enable SystemShadow", Float) = 1
 		_Tweak_SystemShadowsLevel("Tweak SystemShadowsLevel", Range(-0.5, 0.5)) = 0
 
@@ -121,15 +124,17 @@ Shader "AO/Character/Cell_Generic"
 			uniform sampler2D _NormalMap; uniform float4 _NormalMap_ST;
 			uniform float _Is_LightColor;
 			uniform float _Is_NormalMapLighting;
-			uniform float _Is_EnableSystemShadow;
 			uniform float _BaseColor_Step;
-
 			uniform float _BaseShade_Feather;
-			uniform float _Tweak_SystemShadowsLevel;
+
+			uniform float _Contrast;
 			uniform float _ShadeColor_Step;
 			uniform float4 _1st_ShadeColor;
 			uniform float4 _2nd_ShadeColor;
+			uniform float _Is_UseShadeMap;
 			uniform sampler2D _ShadeMap; uniform float4 _ShadeMap_ST;
+			uniform float _Tweak_SystemShadowsLevel;
+			uniform float _Is_EnableSystemShadow;
 
 			uniform float4 _HighLightColor;
 			uniform float _HighLightPower;
@@ -185,16 +190,19 @@ Shader "AO/Character/Cell_Generic"
 
 				float4 shadeMapVar = tex2D(_ShadeMap,TRANSFORM_TEX(i.uv0, _ShadeMap));//Control color in shadow part
 				//Setup first ShadeColor
-				float3 firstShadeColor = (_1st_ShadeColor.rgb*shadeMapVar.rgb);
+				float3 firstShadeColor = (1- _Contrast)*lerp(_1st_ShadeColor.rgb*baseColor.rgb, _1st_ShadeColor.rgb*shadeMapVar.rgb, _Is_UseShadeMap);
 				firstShadeColor = lerp(firstShadeColor, (firstShadeColor*_LightColor0.rgb), _Is_LightColor);
 				//Setup second ShadeColor
-				float3 secondShadeColor = (_2nd_ShadeColor.rgb*shadeMapVar.rgb);
+				float3 secondShadeColor = (1- _Contrast)*lerp(_2nd_ShadeColor.rgb*baseColor.rgb, _2nd_ShadeColor.rgb*shadeMapVar.rgb, _Is_UseShadeMap);
 				secondShadeColor = lerp(secondShadeColor, (secondShadeColor*_LightColor0.rgb), _Is_LightColor);
 				float incidentAngle = 0.5*dot(lerp(i.normalDir, normalDirection, _Is_NormalMapLighting),lightDirection) + 0.5;  //Cos(incidentAngle), change value from [-1.1] to [0,1]
-				float finalShadowSample = -saturate((lerp(incidentAngle, incidentAngle*saturate(attenuation*0.5 + 0.5 + _Tweak_SystemShadowsLevel), _Is_EnableSystemShadow) - _BaseColor_Step + _BaseShade_Feather) / _BaseShade_Feather);
+				float finalShadowSample = saturate(1-(lerp(incidentAngle, incidentAngle*saturate(attenuation*0.5 + 0.5 + _Tweak_SystemShadowsLevel), _Is_EnableSystemShadow) - _BaseColor_Step + _BaseShade_Feather) / _BaseShade_Feather);				
+				float3 finalColor = lerp(baseColor/(1-_Contrast),lerp(firstShadeColor, secondShadeColor,saturate(incidentAngle / _ShadeColor_Step)),finalShadowSample); //Aply shaadow, Blend two shade color by _ShadeColor_Step
 				
-				float3 finalColor = lerp(baseColor,lerp(firstShadeColor, secondShadeColor,saturate(incidentAngle / _ShadeColor_Step)),finalShadowSample); //Aply shaadow, Blend two shade color by _ShadeColor_Step
+				
 				float3 debug = finalColor;
+
+
 				//debug = float3(finalShadowSample, finalShadowSample, finalShadowSample);
 				//High light
 				float specularAngle = 0.5*dot(halfDirection,lerp(i.normalDir, normalDirection, _Is_NormalMapLighting)) + 0.5; //  Specular cosine angle (0,1)
