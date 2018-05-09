@@ -1,7 +1,7 @@
 ﻿//2018-05-03 10:03:06
 //By Chao
 
-Shader "AO/Character/Cell_Generic"
+Shader "AO/Cell/Cell_Generic"
 {
 	Properties
 	{
@@ -23,7 +23,7 @@ Shader "AO/Character/Cell_Generic"
 		_2nd_ShadeColor("2nd ShadeColor", Color) = (1,1,1,1)
 		[MaterialToggle] _Is_UseShadeMap("Use ShadeMap", Float) = 0
 		_ShadeMap("ShadeMap", 2D) = "white" {}
-		[MaterialToggle] _Is_EnableSystemShadow("Enable SystemShadow", Float) = 1
+		[MaterialToggle] _Is_EnableSystemShadow("Enable SystemShadow", Float) = 0
 		_Tweak_SystemShadowsLevel("Tweak SystemShadowsLevel", Range(-0.5, 0.5)) = 0
 
 		//Outline related		
@@ -198,12 +198,7 @@ Shader "AO/Character/Cell_Generic"
 				float incidentAngle = 0.5*dot(lerp(i.normalDir, normalDirection, _Is_NormalMapLighting),lightDirection) + 0.5;  //Cos(incidentAngle), change value from [-1.1] to [0,1]
 				float finalShadowSample = saturate(1-(lerp(incidentAngle, incidentAngle*saturate(attenuation*0.5 + 0.5 + _Tweak_SystemShadowsLevel), _Is_EnableSystemShadow) - _BaseColor_Step + _BaseShade_Feather) / _BaseShade_Feather);				
 				float3 finalColor = lerp(baseColor/(1-_Contrast),lerp(firstShadeColor, secondShadeColor,saturate(incidentAngle / _ShadeColor_Step)),finalShadowSample); //Aply shaadow, Blend two shade color by _ShadeColor_Step
-				
-				
-				float3 debug = finalColor;
-
-
-				//debug = float3(finalShadowSample, finalShadowSample, finalShadowSample);
+			
 				//High light
 				float specularAngle = 0.5*dot(halfDirection,lerp(i.normalDir, normalDirection, _Is_NormalMapLighting)) + 0.5; //  Specular cosine angle (0,1)
 				float4 highlightVar = tex2D(_HighlightMask,TRANSFORM_TEX(i.uv0, _HighlightMask));  //HighLightMask
@@ -222,7 +217,7 @@ Shader "AO/Character/Cell_Generic"
 
 				// Final Color
 				finalColor = saturate(rimLightColor*(1.0 - (DecodeLightProbe(normalDirection)*_GI_Intensity)));
-				fixed4 finalRGBA = fixed4(debug,1.0);
+				fixed4 finalRGBA = fixed4(finalColor,1.0);
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 
