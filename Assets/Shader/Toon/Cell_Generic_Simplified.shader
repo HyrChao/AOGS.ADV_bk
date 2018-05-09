@@ -1,7 +1,7 @@
-﻿//2018-05-03 10:03:06
+﻿//2018-05-09 15:48:50
 //By Chao
 
-Shader "AO/Cell/Cell_Generic"
+Shader "AO/Cell/Cell_Generic_Simplified"
 {
 	Properties
 	{
@@ -17,7 +17,6 @@ Shader "AO/Cell/Cell_Generic"
 		[MaterialToggle] _Is_LightColor("Use LightColor", Float) = 1
 		_BaseShade_Feather("BaseShade Feather", Range(0.0001, 1)) = 0.0001
 		_Contrast("Contrast",Range(0.0001,0.9999)) = 0.0001
-		_Brightness("Brightness",Range(0,1)) = 0.5
 
 		_ShadeColor_Step("ShadeColor Step", Range(0, 1)) = 0.4
 		_1st_ShadeColor("1st ShadeColor", Color) = (1,1,1,1)
@@ -128,7 +127,6 @@ Shader "AO/Cell/Cell_Generic"
 			uniform float _BaseColor_Step;
 			uniform float _BaseShade_Feather;
 
-			uniform float _Brightness;
 			uniform float _Contrast;
 			uniform float _ShadeColor_Step;
 			uniform float4 _1st_ShadeColor;
@@ -187,7 +185,6 @@ Shader "AO/Cell/Cell_Generic"
 				float3 baseColor = (_BaseColor.rgb*baseMapColor.rgb);
 				//-Toggle-  Use light color
 				baseColor = lerp(baseColor, (baseColor*_LightColor0.rgb), _Is_LightColor);//Blend basecolor with light color.
-				baseColor += (_Brightness - 0.5);
 
 				//Shadow
 
@@ -223,47 +220,12 @@ Shader "AO/Cell/Cell_Generic"
 				fixed4 finalRGBA = fixed4(finalColor,1.0);
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
+
 			}
+
 			ENDCG
+		
 		}
 
-		//Shadow
-		Pass{
-			Name "ShadowCaster"
-			Tags{
-			"LightMode" = "ShadowCaster"
-			}
-			Offset 1, 1
-			Cull Off
-
-			CGPROGRAM
-			#pragma vertex vert
-			#pragma fragment frag
-			#define UNITY_PASS_SHADOWCASTER
-			#include "UnityCG.cginc"
-			#include "Lighting.cginc"
-			#pragma fragmentoption ARB_precision_hint_fastest
-			#pragma multi_compile_shadowcaster
-			#pragma multi_compile_fog
-			#pragma only_renderers d3d9 d3d11 glcore gles gles3 metal xboxone ps4 switch
-			#pragma target 3.0
-
-			struct VertexInput {
-				float4 vertex : POSITION;
-			};
-			struct VertexOutput {
-				V2F_SHADOW_CASTER;
-			};
-			VertexOutput vert(VertexInput v) {
-				VertexOutput o = (VertexOutput)0;
-				o.pos = UnityObjectToClipPos(v.vertex);
-				TRANSFER_SHADOW_CASTER(o)
-				return o;
-			}
-			float4 frag(VertexOutput i, float facing : VFACE) : COLOR{
-				SHADOW_CASTER_FRAGMENT(i)
-			}
-			ENDCG
-		}
 	}
 }
