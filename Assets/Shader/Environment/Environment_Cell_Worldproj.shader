@@ -259,9 +259,7 @@ Shader "AO/Environment/Cell_Worldproj"
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;
 			}
-
-			ENDCG
-		
+			ENDCG		
 		}
 		//Cast Shadow
 		Pass{
