@@ -21,7 +21,7 @@
             uniform sampler2D _Outline_Sampler; uniform float4 _Outline_Sampler_ST;
             uniform float4 _Outline_Color;
             uniform fixed _Is_BlendOutlineWithBaseColor;
-            uniform fixed _Is_OutlineReceiveLightColor;
+            uniform fixed _Is_LightColor;
             uniform float _Offset_Depth;
 
             struct VertexInput {
@@ -54,7 +54,7 @@
                 float4 objPos = mul ( unity_ObjectToWorld, float4(0,0,0,1) );
                 float4 _BaseMap_var = tex2D(_BaseMap,TRANSFORM_TEX(i.uv0, _BaseMap));
                 float3 col = (_BaseColor.rgb*_BaseMap_var.rgb);
-                float3 baseColor = lerp( col, (col*_LightColor0.rgb), _Is_OutlineReceiveLightColor);
+                float3 baseColor = lerp( col, (col*_LightColor0.rgb), _Is_LightColor);
                 float3 outputColor = lerp( _Outline_Color.rgb, (_Outline_Color.rgb*baseColor*baseColor), _Is_BlendOutlineWithBaseColor );
                 return fixed4(outputColor,0);
             }

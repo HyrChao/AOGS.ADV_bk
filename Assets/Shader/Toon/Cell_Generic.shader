@@ -18,7 +18,6 @@ Shader "AO/Cell/Cell_Generic"
 		_BaseShade_Feather("BaseShade Feather", Range(0.0001, 1)) = 0.0001
 		_Contrast("Contrast",Range(0.0001,0.9999)) = 0.0001
 		_Brightness("Brightness",Range(0,1)) = 0.5
-
 		_ShadeColor_Step("ShadeColor Step", Range(0, 1)) = 0.4
 		_1st_ShadeColor("1st ShadeColor", Color) = (1,1,1,1)
 		_2nd_ShadeColor("2nd ShadeColor", Color) = (1,1,1,1)
