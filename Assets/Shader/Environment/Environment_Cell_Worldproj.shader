@@ -1,7 +1,7 @@
 ﻿//2018-04-27 14:05:40
 //By Chao
 
-Shader "AO/Environment_Pbr_Worldproj" {
+Shader "AO/Environment_Cell_Worldproj" {
 	
 	Properties {
 		_Color ("Color", Color) = (1,1,1,1)

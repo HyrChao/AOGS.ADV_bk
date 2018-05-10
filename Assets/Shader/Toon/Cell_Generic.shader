@@ -54,6 +54,7 @@ Shader "AO/Cell/Cell_Generic"
 	}
 	SubShader
 	{
+
 		Tags { "RenderType"="Opaque" }
 		LOD 100
 		
@@ -81,6 +82,7 @@ Shader "AO/Cell/Cell_Generic"
 		
 		//Core pass
 		pass {
+
 			Name "Forward"
 			Tags{
 				"LightMode" = "ForwardBase"
@@ -229,6 +231,7 @@ Shader "AO/Cell/Cell_Generic"
 
 		//Shadow
 		Pass{
+
 			Name "ShadowCaster"
 			Tags{
 			"LightMode" = "ShadowCaster"
@@ -266,4 +269,5 @@ Shader "AO/Cell/Cell_Generic"
 			ENDCG
 		}
 	}
+	FallBack "Legacy Shaders/VertexLit"
 }

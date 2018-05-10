@@ -6,6 +6,7 @@ Shader "AO/Environment_Worldproj"
 	Properties
 	{
 		_ProjTex("Texture", 2D) = "white" {}
+		_ShadowBrightness("Shadow Brightness",Range(0,1)) = 0.5
 	}
 	SubShader
 	{
@@ -14,35 +15,32 @@ Shader "AO/Environment_Worldproj"
 
 		Pass
 		{
-			Lighting On
 			Tags{ "LightMode" = "ForwardBase" }
 			CGPROGRAM
 
-			#include "UnityCG.cginc"
-			#include "AutoLight.cginc"
-			#include "Lighting.cginc"
 			#pragma vertex vert
 			#pragma fragment frag
 			#pragma multi_compile_fwdbase
+			#include "UnityCG.cginc"
+			#include "AutoLight.cginc"
 
 			uniform sampler2D _ProjTex;
+			uniform float _ShadowBrightness;
 
 			struct appdata
 			{
 				float4 pos : POSITION;
 				float3 normal : NORMAL;
-				float2 uv : TEXCOORD0;
 			};
 
 			struct v2f
 			{
 				float4 pos : SV_POSITION;
-				float2 uv : TEXCOORD0;
 				float3 normal : NORMAL;
-				float2 coodX : COODX;
-				float2 coodY : COODY;
-				float2 coodZ : COODZ;
-				//LIGHTING_COORDS(4, 5)
+				float2 coodX : TEXCOORDX;
+				float2 coodY : TEXCOORDY;
+				float2 coodZ : TEXCOORDZ;
+				LIGHTING_COORDS(0, 1)
 			};
 
 			//float4 _ProjTex_ST;
@@ -61,7 +59,7 @@ Shader "AO/Environment_Worldproj"
 				o.coodZ.x = worldPosition.x;
 				o.coodZ.y = worldPosition.y;
 				o.pos = UnityObjectToClipPos(v.pos);
-				//TRANSFER_VERTEX_TO_FRAGMENT(o)
+				TRANSFER_VERTEX_TO_FRAGMENT(o)
 
 				return o;
 			}
@@ -69,7 +67,8 @@ Shader "AO/Environment_Worldproj"
 			fixed4 frag(v2f i) : SV_Target
 			{
 
-				//fixed atten = LIGHT_ATTENUATION(i);
+				fixed atten = LIGHT_ATTENUATION(i);
+				atten = saturate(atten+ _ShadowBrightness);
 
 				// sample the texture
 				fixed4 sampleX = tex2D(_ProjTex, float2(i.coodX.x, 1-i.coodX.y));
@@ -79,7 +78,7 @@ Shader "AO/Environment_Worldproj"
 				//fixed4 col = saturate(sampleX * abs(i.normal.x) + sampleY * abs(i.normal.y) + sampleZ * abs(i.normal.z));
 				//fixed4 col = saturate(sampleX * i.normal.x + sampleY * i.normal.y + sampleZ * i.normal.z);
 				fixed4 col = saturate(sampleX * i.normal.x*i.normal.x + sampleY * i.normal.y*i.normal.y + sampleZ * i.normal.z*i.normal.z);
-				//col *= atten;
+				col = atten*col;
 				//fixed4 col = (sampleX * i.normal.x*i.normal.x + sampleY * i.normal.y*i.normal.y + sampleZ * i.normal.z*i.normal.z);
 				//fixed4 col = sampleX * i.normal.x + sampleY * i.normal.y + sampleZ * i.normal.z;
 				//fixed4 col = sampleX  + sampleY  + sampleZ;
@@ -89,51 +88,48 @@ Shader "AO/Environment_Worldproj"
 			ENDCG
 		}
 
-		// Pass to render object as a shadow collector
-		Pass
-		{
-			Name "ShadowCollector"
-			Tags{ "LightMode" = "ShadowCollector" }
+		//Cast Shadow
+		Pass{
 
-			Fog{ Mode Off }
-			ZWrite On ZTest Less
+			Name "ShadowCaster"
+			Tags{
+			"LightMode" = "ShadowCaster"
+			}
+			Offset 1, 1
+			Cull Off
 
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
-			#pragma fragmentoption ARB_precision_hint_fastest
-			#pragma multi_compile_shadowcollector
-
-			#define SHADOW_COLLECTOR_PASS
+			#define UNITY_PASS_SHADOWCASTER
 			#include "UnityCG.cginc"
+			#include "Lighting.cginc"
+			#pragma fragmentoption ARB_precision_hint_fastest
+			#pragma multi_compile_shadowcaster
+			#pragma multi_compile_fog
+			#pragma only_renderers d3d9 d3d11 glcore gles gles3 metal xboxone ps4 switch
+			#pragma target 3.0
 
-			uniform float _Scale;
-
-			struct appdata
-			{
+			struct VertexInput {
 				float4 vertex : POSITION;
 			};
 
-			struct v2f
-			{
-				V2F_SHADOW_COLLECTOR;
+			struct VertexOutput {
+				V2F_SHADOW_CASTER;
 			};
 
-			v2f vert(appdata v)
-			{
-				v2f o;
-				v.vertex.xyz *= _Scale;
-				TRANSFER_SHADOW_COLLECTOR(o)
-					return o;
+			VertexOutput vert(VertexInput v) {
+				VertexOutput o = (VertexOutput)0;
+				o.pos = UnityObjectToClipPos(v.vertex);
+				TRANSFER_SHADOW_CASTER(o)
+				return o;
 			}
 
-			fixed4 frag(v2f i) : COLOR
-			{
-				SHADOW_COLLECTOR_FRAGMENT(i)
+			float4 frag(VertexOutput i, float facing : VFACE) : COLOR{
+				SHADOW_CASTER_FRAGMENT(i)
 			}
 			ENDCG
-
 		}
 	}
-	Fallback Off
+	Fallback "VertexLit"
 }
