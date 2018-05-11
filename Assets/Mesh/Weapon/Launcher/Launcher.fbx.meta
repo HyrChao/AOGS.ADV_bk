@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: 911d34f584ae63742837368696ea9699
-timeCreated: 1522660590
+guid: 5dc4232585d826147a35e142aa9c5a10
+timeCreated: 1522735290
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
     100000: //RootNode
     400000: //RootNode
-    2100000: Kanata_M1_13_1_Material
+    2100000: Cannon_B4_43_3_Material
     2300000: //RootNode
     3300000: //RootNode
-    4300000: WeaponR
+    4300000: Launcher2
   externalObjects: {}
   materials:
-    importMaterials: 1
+    importMaterials: 0
     materialName: 0
     materialSearch: 1
     materialLocation: 1

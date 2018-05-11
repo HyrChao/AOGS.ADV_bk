@@ -224,7 +224,6 @@ Shader "AO/Environment/Cell_Worldproj"
 
 				//Base color
 				float attenuation = LIGHT_ATTENUATION(i);
-				float atten = saturate(attenuation+ _ShadowBrightness);
 				fixed4 sampleX = tex2D(_BaseMap, float2(coodX.x, 1-coodX.y));
 				fixed4 sampleY = tex2D(_BaseMap, float2(coodY.x, 1-coodY.y));
 				fixed4 sampleZ = tex2D(_BaseMap, float2(coodZ.x, 1-coodZ.y));
@@ -239,6 +238,7 @@ Shader "AO/Environment/Cell_Worldproj"
 				float incidentAngle = 0.5*dot(lerp(i.normalDir, normalDirection, _Is_NormalMapLighting),lightDirection) + 0.5;  //Cos(incidentAngle), change value from [-1.1] to [0,1]
 				float finalShadowSample = saturate(1-(lerp(incidentAngle, incidentAngle*saturate(attenuation*0.5 + 0.5 + _Tweak_SystemShadowsLevel), _Is_EnableSystemShadow) - _BaseColor_Step + _BaseShade_Feather) / _BaseShade_Feather);				
 				float3 finalColor = lerp(baseColor/(1-_Contrast),firstShadeColor,finalShadowSample); //Aply shaadow
+				attenuation = saturate(attenuation+ _ShadowBrightness);
 			
 				//High light
 				float specularAngle = 0.5*dot(halfDirection,lerp(i.normalDir, normalDirection, _Is_NormalMapLighting)) + 0.5; //  Specular cosine angle (0,1)
@@ -254,7 +254,7 @@ Shader "AO/Environment/Cell_Worldproj"
 				rimLightColor = lerp(highlightColor, (highlightColor + rimLightColor), _UseRimLight);
 
 				// Final Color
-				finalColor = saturate(rimLightColor*atten*(1.0 - (DecodeLightProbe(normalDirection)*_GI_Intensity)));
+				finalColor = saturate(rimLightColor*attenuation*(1.0 - (DecodeLightProbe(normalDirection)*_GI_Intensity)));
 				fixed4 finalRGBA = fixed4(finalColor,1.0);
 				UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
 				return finalRGBA;

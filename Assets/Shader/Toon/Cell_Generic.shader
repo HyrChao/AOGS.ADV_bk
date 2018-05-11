@@ -14,13 +14,12 @@ Shader "AO/Cell/Cell_Generic"
 
 		//Shadow & Light related
 		[MaterialToggle] _Is_NormalMapLighting("Use NormalMap", Float) = 0
-		[MaterialToggle] _Is_LightColor("Use LightColor", Float) = 1
-		_BaseShade_Feather("BaseShade Feather", Range(0.0001, 1)) = 0.0001
-		_Contrast("Contrast",Range(0.0001,0.9999)) = 0.0001
+		[MaterialToggle] _Is_LightColor("Use LightColor", Float) = 1 
 		_Brightness("Brightness",Range(0,1)) = 0.5
+		_1st_ShadeColor("1st ShadeColor", Color) = (0.25,0.25,0.25,0.25)
+		_2nd_ShadeColor("2nd ShadeColor", Color) = (0.5,0.5,0.5,0.5)
 		_ShadeColor_Step("ShadeColor Step", Range(0, 1)) = 0.4
-		_1st_ShadeColor("1st ShadeColor", Color) = (1,1,1,1)
-		_2nd_ShadeColor("2nd ShadeColor", Color) = (1,1,1,1)
+		_BaseShade_Feather("Shade Feather", Range(0.0001, 1)) = 0.0001
 		[MaterialToggle] _Is_UseShadeMap("Use ShadeMap", Float) = 0
 		_ShadeMap("ShadeMap", 2D) = "white" {}
 		[MaterialToggle] _Is_EnableSystemShadow("Enable SystemShadow", Float) = 0
@@ -29,22 +28,22 @@ Shader "AO/Cell/Cell_Generic"
 		//Outline related		
 		_Outline_Color("Outline Color", Color) = (0.5,0.5,0.5,1)
 		_Outline_Sampler("Outline Sampler", 2D) = "white" {}
-		_Outline_Width("Outline Width", Float) = 1
+		_Outline_Width("Outline Width", Float) = 5
 		_Nearest_Distance("Nearest Distance", Float) = 0.5
 		_Farthest_Distance("Farthest Distance", Float) = 10
 		_Offset_Depth("Offset Camera Depth", Float) = 0
 		[MaterialToggle] _Is_BlendOutlineWithBaseColor("Outline Blend BaseColor", Float) = 0
 
 		//Highlight related
-		[MaterialToggle] _AddHighlight("Add Highlight", Float) = 0
+		[MaterialToggle] _AddHighlight("Add Highlight", Float) = 1
 		_HighLightColor("Highlight Color", Color) = (1,1,1,1)
 		_HighLightPower("Highlight Power", Range(0, 1)) = 0
-		[MaterialToggle] _UseSpecularAsHighlight("Use Specular As Highlight", Float) = 0
+		[MaterialToggle] _UseSpecularAsHighlight("Use Specular As Highlight", Float) = 1
 		_HighlightMask("Highlight Mask", 2D) = "white" {}
 		_Tweak_HighLightMaskLevel("Tweak HighLight MaskLevel", Range(-1, 1)) = 0
 
 		//Rimlight related
-		[MaterialToggle] _UseRimLight("Use RimLight", Float) = 0
+		[MaterialToggle] _UseRimLight("Use RimLight", Float) = 1
 		_RimLightColor("RimLight Color", Color) = (1,1,1,1)
 		_RimLightPower("RimLight Power", Range(0, 1)) = 0.1
 		_Set_RimLightMask("RimLight Mask", 2D) = "white" {}
@@ -130,7 +129,6 @@ Shader "AO/Cell/Cell_Generic"
 			uniform float _BaseShade_Feather;
 
 			uniform float _Brightness;
-			uniform float _Contrast;
 			uniform float _ShadeColor_Step;
 			uniform float4 _1st_ShadeColor;
 			uniform float4 _2nd_ShadeColor;
@@ -186,38 +184,42 @@ Shader "AO/Cell/Cell_Generic"
 				float attenuation = LIGHT_ATTENUATION(i);
 				float4 baseMapColor = tex2D(_BaseMap,TRANSFORM_TEX(i.uv0, _BaseMap));
 				float3 baseColor = (_BaseColor.rgb*baseMapColor.rgb);
+
 				//-Toggle-  Use light color
 				baseColor = lerp(baseColor, (baseColor*_LightColor0.rgb), _Is_LightColor);//Blend basecolor with light color.
 				baseColor += (_Brightness - 0.5);
 
 				//Shadow
-
 				float4 shadeMapVar = tex2D(_ShadeMap,TRANSFORM_TEX(i.uv0, _ShadeMap));//Control color in shadow part
+
 				//Setup first ShadeColor
-				float3 firstShadeColor = (1- _Contrast)*lerp(_1st_ShadeColor.rgb*baseColor.rgb, _1st_ShadeColor.rgb*shadeMapVar.rgb, _Is_UseShadeMap);
+				float3 firstShadeColor = lerp(_1st_ShadeColor.rgb*baseColor.rgb, _1st_ShadeColor.rgb*shadeMapVar.rgb, _Is_UseShadeMap);
 				firstShadeColor = lerp(firstShadeColor, (firstShadeColor*_LightColor0.rgb), _Is_LightColor);
+
 				//Setup second ShadeColor
-				float3 secondShadeColor = (1- _Contrast)*lerp(_2nd_ShadeColor.rgb*baseColor.rgb, _2nd_ShadeColor.rgb*shadeMapVar.rgb, _Is_UseShadeMap);
+				float3 secondShadeColor = lerp(_2nd_ShadeColor.rgb*baseColor.rgb, _2nd_ShadeColor.rgb*shadeMapVar.rgb, _Is_UseShadeMap);
 				secondShadeColor = lerp(secondShadeColor, (secondShadeColor*_LightColor0.rgb), _Is_LightColor);
 				float incidentAngle = 0.5*dot(lerp(i.normalDir, normalDirection, _Is_NormalMapLighting),lightDirection) + 0.5;  //Cos(incidentAngle), change value from [-1.1] to [0,1]
 				float finalShadowSample = saturate(1-(lerp(incidentAngle, incidentAngle*saturate(attenuation*0.5 + 0.5 + _Tweak_SystemShadowsLevel), _Is_EnableSystemShadow) - _BaseColor_Step + _BaseShade_Feather) / _BaseShade_Feather);				
-				float3 finalColor = lerp(baseColor/(1-_Contrast),lerp(firstShadeColor, secondShadeColor,saturate(incidentAngle / _ShadeColor_Step)),finalShadowSample); //Aply shaadow, Blend two shade color by _ShadeColor_Step
+				float3 finalColor = lerp(baseColor,lerp(firstShadeColor, secondShadeColor,saturate(incidentAngle / _ShadeColor_Step)),finalShadowSample); //Aply shaadow, Blend two shade color by _ShadeColor_Step
 			
 				//High light
 				float specularAngle = 0.5*dot(halfDirection,lerp(i.normalDir, normalDirection, _Is_NormalMapLighting)) + 0.5; //  Specular cosine angle (0,1)
 				float4 highlightVar = tex2D(_HighlightMask,TRANSFORM_TEX(i.uv0, _HighlightMask));  //HighLightMask
 				float3 highlightColor = saturate(highlightVar.g + _Tweak_HighLightMaskLevel)*lerp(1.0 - step(specularAngle,(1.0 - _HighLightPower)), pow(specularAngle,exp2(lerp(11,1,_HighLightPower))), _UseSpecularAsHighlight);
-				highlightColor = (lerp(_HighLightColor.rgb, (_HighLightColor.rgb*_LightColor0.rgb), _Is_LightColor)*highlightColor);
-				highlightColor = lerp(saturate(finalColor - highlightColor), finalColor, _AddHighlight) + highlightColor;
+				highlightColor = lerp(_HighLightColor.rgb, (_HighLightColor.rgb*_LightColor0.rgb), _Is_LightColor)*highlightColor;
+				highlightColor = lerp(finalColor, finalColor+highlightColor, _AddHighlight);
 
-				//Rimlight 
+				//Rimlight
+				_RimLightColor = _LightColor0;
+
 				float4 rimLightMaskVar = tex2D(_Set_RimLightMask,TRANSFORM_TEX(i.uv0, _Set_RimLightMask)); // RimLightMask
 				float3 rimLightColor = lerp(_RimLightColor.rgb, (_RimLightColor.rgb*_LightColor0.rgb), _Is_LightColor);
 				float viewNormalAngel = (1.0 - dot(lerp(i.normalDir, normalDirection, _Is_NormalMapLighting),viewDirection));
 				viewNormalAngel = pow(viewNormalAngel,exp2(lerp(3,0,_RimLightPower)));
 				rimLightColor = rimLightColor * viewNormalAngel;
 				rimLightColor = saturate(rimLightMaskVar.g + _Tweak_RimLightMaskLevel)*rimLightColor; //apply rimlight mask
-				rimLightColor = lerp(highlightColor, (highlightColor + rimLightColor), _UseRimLight);
+				rimLightColor = lerp(highlightColor, highlightColor + rimLightColor, _UseRimLight);
 
 				// Final Color
 				finalColor = saturate(rimLightColor*(1.0 - (DecodeLightProbe(normalDirection)*_GI_Intensity)));
