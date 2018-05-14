@@ -139,6 +139,18 @@ static class AO
             _slot = value;
         }
     }
+    private static MenuManager _menu;
+    public static MenuManager menu
+    {
+        get
+        {
+            return _menu;
+        }
+        set
+        {
+            _menu = value;
+        }
+    }
     private static EventSystem _eventSystem;
     public static EventSystem eventSystem
     {

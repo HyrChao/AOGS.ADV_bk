@@ -5,8 +5,8 @@ using UnityEngine;
 using System.Collections;
 
 public class MenuManager : MonoBehaviour {
-    public GenericMenu[] menu;          //窗口数组
 
+    public GenericMenu[] menu;          //窗口数组
     public GenericMenu GetWindow(int value)
     {
         return menu[value];
@@ -37,9 +37,18 @@ public class MenuManager : MonoBehaviour {
 
     }
 
+    private void Awake()
+    {
+        if (AO.menu == null)
+        {
+            AO.menu = this;
+        }
+    }
+
     void Start()
     {
         GenericMenu.menuManager = this;      //使每个继承GericWindows的窗口都有Manager   
         Open(defaultWindowID);
     }
+
 }

@@ -9,9 +9,6 @@ using UnityEngine.SceneManagement;
 public class GameoverMenu : GenericMenu
 {
     public ToggleGroup gameOverToggleGroup;
-    public float delay = 0;
-    public float inputDelay = .3f;
-
     public int gameOverButtonID
     {
         get
@@ -40,7 +37,7 @@ public class GameoverMenu : GenericMenu
         }
     }
 
-    public void OnSelect()
+    override public void OnSelect()
     {
         //NextWindow();
         PlayerPrefs.GetInt("gameOverButtonID", gameOverButtonID);
@@ -72,23 +69,21 @@ public class GameoverMenu : GenericMenu
 
     void Update()
     {
-        delay += Time.deltaTime;
-        if (delay > inputDelay)
+        if (Input.GetButtonDown("Vertical"))
         {
             var newGameOverButtonID = gameOverButtonID;
-            var hValue = Input.GetAxis("Horizontal");
+            var hValue = Input.GetAxis("Vertical");
 
             if (hValue > 0)
-            {
                 newGameOverButtonID++;
-            }
             else if (hValue < 0)
                 newGameOverButtonID--;
             if (newGameOverButtonID != gameOverButtonID)
                 gameOverButtonID = newGameOverButtonID;
-            delay = 0;
-           
+
+            OnSelect();
         }
+
         if (Input.GetButtonDown("Submit"))
         {
             OnSelect();
