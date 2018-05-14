@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class StartWindow : GenericWindow {
+public class StartMenu : GenericMenu {
 
     public Button continueButton;         //按钮容器
 
@@ -12,9 +12,7 @@ public class StartWindow : GenericWindow {
         var canContinue = true;
         continueButton.gameObject.SetActive(canContinue);
         if (continueButton.gameObject.activeSelf)
-            firstSelected = continueButton.gameObject;
-
-
+            defaultSelected = continueButton.gameObject;
 
         base.Open();
     }
@@ -26,16 +24,13 @@ public class StartWindow : GenericWindow {
 
     public void NewGame()
     {
-
         SceneManager.LoadScene("Scene1");      //到场景1
     }
 
     public void Option()
     {
-        windowManager.Open(1);
+        menuManager.Open(1);
     }
-
-
 
     // Use this for initialization
     protected override void Awake()
@@ -43,17 +38,8 @@ public class StartWindow : GenericWindow {
        
     }
 
-
-
-
     void Start () {
         Open();
 	}
 	
-	// Update is called once per frame
-	void FixedUpdate () {
-        if(AO.GameOver)
-            windowManager.Open(1);
-
-    }
 }

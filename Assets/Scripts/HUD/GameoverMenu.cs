@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using System.Linq;
 using UnityEngine.SceneManagement;
 
-public class GameoverWindow : GenericWindow
+public class GameoverMenu : GenericMenu
 {
     public ToggleGroup gameOverToggleGroup;
     public float delay = 0;
@@ -61,7 +61,6 @@ public class GameoverWindow : GenericWindow
             Application.Quit();
             Debug.Log("quit");
         }
-
     }
 
     public override void Open()         //打开窗口
@@ -70,7 +69,6 @@ public class GameoverWindow : GenericWindow
 
         base.Open();
     }
-
 
     void Update()
     {
@@ -96,5 +94,4 @@ public class GameoverWindow : GenericWindow
             OnSelect();
         }
     }
-
 }

@@ -3,7 +3,7 @@
 //Static game manager
 
 using UnityEngine;
-
+using UnityEngine.EventSystems;
 static class AO
 {
 
@@ -137,6 +137,18 @@ static class AO
         set
         {
             _slot = value;
+        }
+    }
+    private static EventSystem _eventSystem;
+    public static EventSystem eventSystem
+    {
+        get
+        {
+            return _eventSystem;
+        }
+        set
+        {
+            _eventSystem = value;
         }
     }
 }

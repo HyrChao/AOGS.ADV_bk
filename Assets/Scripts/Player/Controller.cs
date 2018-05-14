@@ -7,9 +7,6 @@ using UnityEngine;
 
 public class Controller : MonoBehaviour {
 
-    //Debug
-    private bool debug;
-
     //Referances
     private GameObject charaMesh;
     private CapsuleCollider col;
@@ -61,7 +58,6 @@ public class Controller : MonoBehaviour {
         col = GetComponent<CapsuleCollider>();
         //am = GetComponent<AnimeManager>();
         gravityCenterHeight = col.height/2;
-        debug = false;
     }
 
     // Use this for initialization
@@ -159,7 +155,7 @@ public class Controller : MonoBehaviour {
         //}
 
 
-        debug = grounded;
+   
         //Debug.Log(grounded);
         //Debug.Log(debug.ToString());
 
