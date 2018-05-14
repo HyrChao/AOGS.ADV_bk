@@ -6,7 +6,6 @@ using UnityEngine;
 
 static class AO
 {
-    public const bool debug = false;
 
     static private Mode mode = Mode._2D;
     public static Mode Mode

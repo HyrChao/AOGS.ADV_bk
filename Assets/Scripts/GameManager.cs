@@ -7,6 +7,34 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    //Debug Settings
+    private uint debugSetting = 0;
+    public uint DebugSetting
+    {
+        get
+        {
+            return debugSetting;
+        }
+        set
+        {
+            debugSetting = value;
+        }
+    }
+
+    //System Settings
+    private uint systemSetting = 0;
+    public uint SystemSetting
+    {
+        get
+        {
+            return systemSetting;
+        }
+        set
+        {
+            systemSetting = value;
+        }
+    }
+
     private void Awake()
     {
         //Setup fps
