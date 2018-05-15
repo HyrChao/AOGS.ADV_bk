@@ -8,85 +8,108 @@ using UnityEngine.SceneManagement;
 
 public class GameoverMenu : GenericMenu
 {
-    public ToggleGroup gameOverToggleGroup;
-    public int gameOverButtonID
-    {
-        get
-        {
-            var total = gameOverToggleGroup.transform.childCount;
-            for(var i = 0; i < total; i++)
-            {
-                var toggle = gameOverToggleGroup.transform.GetChild(i).GetComponent<Toggle>();
-                if(toggle.isOn)
-                    return i;
-            }
-            return 0;
-        }
-        set
-        {
-            value = (int)Mathf.Repeat(value, gameOverToggleGroup.transform.childCount);    //数值在长度范围内重复
-            var currentSelectuiion = gameOverToggleGroup.ActiveToggles().FirstOrDefault();     //Linq 当前选项为第一或者默认选项
-            if (currentSelectuiion != null)
-            {
-                currentSelectuiion.isOn = false;           //若有选项激活则关闭选项
+    //public ToggleGroup gameOverToggleGroup;
 
-            }
-            currentSelectuiion = gameOverToggleGroup.gameObject.transform.GetChild(value).GetComponent<Toggle>();
-            currentSelectuiion.isOn = true;
-            Debug.Log("SN" + value);
-        }
-    }
+    //public int gameOverButtonID
+    //{
+    //    get
+    //    {
+    //        var total = gameOverToggleGroup.transform.childCount;
+    //        for(var i = 0; i < total; i++)
+    //        {
+    //            var toggle = gameOverToggleGroup.transform.GetChild(i).GetComponent<Toggle>();
+    //            if(toggle.isOn)
+    //                return i;
+    //        }
+    //        return 0;
+    //    }
+    //    set
+    //    {
+    //        value = (int)Mathf.Repeat(value, gameOverToggleGroup.transform.childCount);    //数值在长度范围内重复
+    //        var currentSelectuiion = gameOverToggleGroup.ActiveToggles().FirstOrDefault();     //Linq 当前选项为第一或者默认选项
+    //        if (currentSelectuiion != null)
+    //        {
+    //            currentSelectuiion.isOn = false;           //若有选项激活则关闭选项
 
-    override public void OnSelect()
+    //        }
+    //        currentSelectuiion = gameOverToggleGroup.gameObject.transform.GetChild(value).GetComponent<Toggle>();
+    //        currentSelectuiion.isOn = true;
+    //        Debug.Log("SN" + value);
+    //    }
+    //}
+
+
+    override protected void OnConfirm()
     {
         //NextWindow();
-        PlayerPrefs.GetInt("gameOverButtonID", gameOverButtonID);
-        if (gameOverButtonID == 0)
+        //PlayerPrefs.GetInt("gameOverButtonID", gameOverButtonID);
+        if (select == 0)
         {
             SceneManager.LoadScene("Scene1");
-            Debug.Log("continue");
         }
 
-        if (gameOverButtonID == 1)
+        if (select == 1)
         {
             SceneManager.LoadScene("Scene1");
-            Debug.Log("rebirth");
         }
 
-        if (gameOverButtonID == 2)
+        if (select == 2)
         {
             Application.Quit();
-            Debug.Log("quit");
         }
+    }
+    
+    override protected void OnFocus()
+    {
+        selectable[defaultSelect].GetComponent<Toggle>().isOn = true;
+    }
+
+    override protected void OnSelect()
+    {
+        selectable[previousSelect].GetComponent<Toggle>().isOn = false;
+        selectable[currentSelect].GetComponent<Toggle>().isOn = true;
+        //Debug.Log("GameOver Select "+ "currentSelect "+currentSelect.ToString());
     }
 
     public override void Open()         //打开窗口
     {
-        gameOverButtonID = PlayerPrefs.GetInt("gameOverButtonID", 0); //初始化预设
-
+        
         base.Open();
     }
 
-    void Update()
+    protected override void Update()
     {
-        if (Input.GetButtonDown("Vertical"))
+        //if (Input.GetButtonDown("Horizontal"))
+        //{
+        //    float hValue = Input.GetAxis("Horizontal");
+
+        //    if (hValue > 0)
+        //        gameOverButtonID++;
+
+        //    else if (hValue < 0)
+        //        gameOverButtonID--;
+
+        //    //OnFocus();
+        //}
+        base.Update();
+
+        if (Input.GetButtonDown("Horizontal"))
         {
-            var newGameOverButtonID = gameOverButtonID;
-            var hValue = Input.GetAxis("Vertical");
-
-            if (hValue > 0)
-                newGameOverButtonID++;
-            else if (hValue < 0)
-                newGameOverButtonID--;
-            if (newGameOverButtonID != gameOverButtonID)
-                gameOverButtonID = newGameOverButtonID;
-
-            OnSelect();
+            float axis = Input.GetAxis("Horizontal");
+            if (axis == 0)
+                return;
+            if (axis > 0)
+                select++;
+            else
+                select--;
         }
-
-        if (Input.GetButtonDown("Submit"))
-        {
-            OnSelect();
-        }
+        //if (Input.GetButtonDown("Attack"))
+        //{
+        //    select--;
+        //}
+        //if (Input.GetButtonDown("Fire"))
+        //{
+        //    select++;
+        //}
     }
 }

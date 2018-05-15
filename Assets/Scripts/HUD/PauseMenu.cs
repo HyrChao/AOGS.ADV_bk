@@ -13,6 +13,21 @@ public class PauseMenu : GenericMenu {
 	
 	void Update ()
     {
-		
-	}
+        if (Input.GetButtonDown("Vertical"))
+        {
+            var hValue = Input.GetAxis("Vertical");
+
+            if (hValue > 0)
+                select++;
+            else if (hValue < 0)
+                select--;
+
+            OnFocus();
+        }
+
+        if (Input.GetButtonDown("Submit"))
+        {
+            OnSelect();
+        }
+    }
 }

@@ -9,10 +9,10 @@ public class StartMenu : GenericMenu {
 
     public override void Open()
     {
-        var canContinue = true;
-        continueButton.gameObject.SetActive(canContinue);
-        if (continueButton.gameObject.activeSelf)
-            defaultSelected = continueButton.gameObject;
+        //var canContinue = true;
+        //continueButton.gameObject.SetActive(canContinue);
+        //if (continueButton.gameObject.activeSelf)
+        //    defaultSelect = continueButton.gameObject;
 
         base.Open();
     }
@@ -30,12 +30,6 @@ public class StartMenu : GenericMenu {
     public void Option()
     {
         menuManager.Open(1);
-    }
-
-    // Use this for initialization
-    protected override void Awake()
-    {
-       
     }
 
     void Start () {

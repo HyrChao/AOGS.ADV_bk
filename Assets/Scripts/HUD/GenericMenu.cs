@@ -8,41 +8,62 @@ using UnityEngine.UI;
 
 public class GenericMenu : MonoBehaviour
 {
-
+    
     public static MenuManager menuManager;  //窗口管理器(static)
 
     public Menu nextWindow;              //便于Unity界面中更改
     public Menu previousWindow;
 
-    public GameObject defaultSelected;
-    public GameObject selectableGroup;
-    private GameObject[] selectableArray;
+    protected int previousSelect;
+    protected int currentSelect;
+    public int defaultSelect = 0;
 
-    private int buttonID = 0;
-    protected int ButtonID
+    public GameObject selectableGroup;
+    public GameObject[] selectable;
+
+    private int _select = 0;
+    private int debug = 0;
+    protected int select
     {
         get
         {
-            return buttonID;
-            //var total = buttonGroup.transform.childCount;
-            //for (var i = 0; i < total; i++)
-            //{
-            //    Button btn = buttonGroup.transform.GetChild(i).GetComponent<Button>();
-            //    if (btn.isActiveAndEnabled)
-            //        return i;
-            //}
-            //return 0;
+            return _select;
         }
         set
         {
-            value = (int)Mathf.Repeat(value, selectableGroup.transform.childCount);    //数值在长度范围内重复
-            OnFocus();
+            previousSelect = _select;
+            int delta = value - _select;
+            if (delta > 0)
+                _select++;
+            else
+                _select--;
+
+            int maxIndex = selectableGroup.transform.childCount -1;
+            //数值在长度范围内重复
+            if (_select > maxIndex)
+                _select = 0;
+            if (_select < 0)
+                _select = maxIndex;
+            //_select = (int)Mathf.Repeat(_select, selectableGroup.transform.childCount);    
+            currentSelect = _select;
+            Select(selectable[_select]);
         }
     }
 
-    public virtual void OnFocus()         //选中默认按钮
+    protected virtual void OnFocus()         //选中默认按钮
     {
-        AO.eventSystem.SetSelectedGameObject(selectableArray[buttonID]);
+        AO.eventSystem.SetSelectedGameObject(selectable[defaultSelect]);
+    }
+
+    protected void Select(GameObject selectObj)
+    {
+        AO.eventSystem.SetSelectedGameObject(selectObj);
+        OnSelect();
+    }
+
+    protected void Confirm()
+    {
+        OnConfirm();
     }
 
     protected virtual void Display(bool value)
@@ -61,7 +82,12 @@ public class GenericMenu : MonoBehaviour
         Display(false);
     }
 
-    virtual public void OnSelect()
+    protected virtual void OnSelect()
+    {
+        Debug.Log("Select Base");
+    }
+
+    protected virtual void OnConfirm()
     {
 
     }
@@ -77,14 +103,16 @@ public class GenericMenu : MonoBehaviour
 
     }
 
-    protected virtual void Awake()
+    protected void Awake()
     {
         Close();
 
-        for(int i = 0; i < selectableGroup.transform.childCount; i++)
+        selectable = new GameObject[selectableGroup.transform.childCount];
+
+        for (int i = 0; i < selectableGroup.transform.childCount; i++)
         {
             GameObject selectObj = selectableGroup.transform.GetChild(i).gameObject;
-            selectableArray[i] = selectObj;
+            selectable[i] = selectObj;
         }
 
         if(AO.eventSystem == null)
@@ -92,9 +120,12 @@ public class GenericMenu : MonoBehaviour
 
     }
 
-    void Update()
+    protected virtual void Update()
     {
-
+        if (Input.GetButtonDown("Submit"))
+        {
+            OnConfirm();
+        }
     }
 
 }
