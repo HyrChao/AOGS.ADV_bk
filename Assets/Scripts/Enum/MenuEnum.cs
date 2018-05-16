@@ -5,6 +5,7 @@
 public enum Menu
 {
     None,
+    PauseMenu,
     StartMenu,
     GameOver
 }

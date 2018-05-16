@@ -1,33 +1,29 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿//2018-05-15
+//By Chao
+//Pause menu manage
+
 using UnityEngine;
 
 public class PauseMenu : GenericMenu {
 
-
-
-	void Start ()
+    protected override void OnConfirm()
     {
-		
-	}
-	
-	void Update ()
+        base.OnConfirm();
+    }
+
+    protected override void Update ()
     {
+        base.Update();
+
         if (Input.GetButtonDown("Vertical"))
         {
             var hValue = Input.GetAxis("Vertical");
 
-            if (hValue > 0)
+            if (hValue < 0)
                 select++;
-            else if (hValue < 0)
+            else if (hValue > 0)
                 select--;
-
-            OnFocus();
-        }
-
-        if (Input.GetButtonDown("Submit"))
-        {
-            OnSelect();
         }
     }
+
 }

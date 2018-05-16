@@ -2,7 +2,6 @@
 //by Chao
 //管理游戏中的全局变量/方法，更新游戏的进行状态
 using UnityEngine;
-using System.Collections;
 
 public class MenuManager : MonoBehaviour {
 
@@ -12,26 +11,24 @@ public class MenuManager : MonoBehaviour {
         return menu[value];
     }
 
-    public void ToggleWindowVisiblity(int value) //打开value编号的窗口，关闭其它窗口
+    public void ToggleWindowVisiblity(Menu value) //打开value编号的窗口，关闭其它窗口
     {
         var total = menu.Length;
         for (var i = 0; i < total; i++)
         {
-            var window = menu[i];
-            if (i == value)
+            GenericMenu window = menu[i];
+            if (window.tag == value)
                 window.Open();
             else if (window.gameObject.activeSelf)
                 window.Close();
         }
     }
 
-    public int currentWindowID;
-    public int defaultWindowID;
-    public GenericMenu Open(int value)        //判断value范围是否正确并且打开窗口
+    public Menu currentMenu = Menu.None;
+    public Menu defaultMenu = Menu.None;
+    public GenericMenu Open(Menu value)        //判断value范围是否正确并且打开窗口
     {
-        if (value < 0 || value >= menu.Length)
-            return null;
-        currentWindowID = value;
+        currentMenu = GenericMenu.currentMenu;
         ToggleWindowVisiblity(currentWindowID);
         return GetWindow(currentWindowID);
 

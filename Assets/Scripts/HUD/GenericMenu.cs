@@ -2,17 +2,18 @@
 //by Chao
 
 using UnityEngine;
-using System.Collections;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class GenericMenu : MonoBehaviour
 {
-    
+    public static Menu currentMenu = Menu.None;
+
+    public Menu tag = Menu.None; //便于Unity界面中更改
     public static MenuManager menuManager;  //窗口管理器(static)
 
-    public Menu nextWindow;              //便于Unity界面中更改
-    public Menu previousWindow;
+    public Menu nextWindow = Menu.None;              
+    public Menu previousWindow = Menu.None;
 
     protected int previousSelect;
     protected int currentSelect;
@@ -22,7 +23,6 @@ public class GenericMenu : MonoBehaviour
     public GameObject[] selectable;
 
     private int _select = 0;
-    private int debug = 0;
     protected int select
     {
         get
@@ -74,6 +74,7 @@ public class GenericMenu : MonoBehaviour
     public virtual void Open()         //打开窗口
     {
         Display(true);
+        currentMenu = this.tag;
         OnFocus();
     }
 
