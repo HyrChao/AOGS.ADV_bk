@@ -45,19 +45,9 @@ public class GameManager : MonoBehaviour
         {
             AO.gm = this;
         }
-        AO.controller = GameObject.Find("Player").GetComponent<Controller>();
-        AO.player = GameObject.Find("Player").GetComponent<Player>();
-        AO.animeManager = GameObject.Find("Player").GetComponent<AnimeManager>();
-        AO.slot = GameObject.Find("Player").GetComponent<SlotManager>();
+
         AO.hud = GameObject.Find("HUD").GetComponent<HUD>();
         AO.eventSystem = GameObject.Find("EventSystem").GetComponent<EventSystem>();
-
-        AO.player.launcher = Instantiate(AO.player.launcher, AO.slot.laucherSlot.position, AO.slot.laucherSlot.rotation);
-        AO.player.launcher.gameObject.transform.parent = AO.slot.laucherSlot;//Initialize as child of launcher slot
-        AO.player.weapon = Instantiate(AO.player.weapon, AO.slot.weaponSlot.position, AO.slot.weaponSlot.rotation);
-        AO.player.weapon.gameObject.transform.parent = AO.slot.weaponSlot;//Initialize as child of weapon slot
-
-
     }
 
     void Start()
@@ -91,7 +81,7 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         AO.player.state = PlayerState.Dying;
-        AO.controller.enabled = false;
+        AO.player.controller.enabled = false;
         SceneManager.LoadScene("Begin");
     }
 

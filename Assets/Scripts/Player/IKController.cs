@@ -11,7 +11,7 @@ public class IKController : MonoBehaviour
     private Launcher launcher;
     void Start()
     {
-        avator = AO.animeManager.Animator;
+        avator = AO.player.animeManager.Animator;
         launcher = AO.player.launcher;
     }
     void OnAnimatorIK(int layerIndex)

@@ -63,13 +63,12 @@ static class AO
             _gm = value;
         }
     }
-
     private static Player _player;
     public static Player player
     {
         get
         {
-            if (controller != null)
+            if (_player != null)
                 return _player;
             else
                 return null;
@@ -79,36 +78,8 @@ static class AO
             _player = value;
         }
     }
-    private static Controller _controller;
-    public static Controller controller
-    {
-        get
-        {
-            if (_controller != null)
-                return _controller;
-            else
-                return null;
-        }
-        set
-        {
-            _controller = value;
-        }
-    }
-    private static AnimeManager _animeManager;
-    public static AnimeManager animeManager
-    {
-        get
-        {
-            if (_animeManager != null)
-                return _animeManager;
-            else
-                return null;
-        }
-        set
-        {
-            _animeManager = value;
-        }
-    }
+
+
     private static HUD _hud;
     public static HUD hud
     {
@@ -122,21 +93,6 @@ static class AO
         set
         {
             _hud = value;
-        }
-    }
-    private static SlotManager _slot;
-    public static SlotManager slot
-    {
-        get
-        {
-            if (_slot != null)
-                return _slot;
-            else
-                return null;
-        }
-        set
-        {
-            _slot = value;
         }
     }
     private static MenuManager _menu;

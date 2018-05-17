@@ -9,7 +9,6 @@ using System.Collections;
 public class Player : MonoBehaviour {
 
     public PlayerState state = PlayerState.None;
-
     //Tansform
     private Vector3 faceDirection;
     public Vector3 FaceDirection
@@ -21,6 +20,53 @@ public class Player : MonoBehaviour {
         set
         {
             faceDirection = value;
+        }
+    }
+
+    //Component
+    private Controller _controller;
+    public Controller controller
+    {
+        get
+        {
+            if (_controller != null)
+                return _controller;
+            else
+                return null;
+        }
+        set
+        {
+            _controller = value;
+        }
+    }
+    private AnimeManager _animeManager;
+    public AnimeManager animeManager
+    {
+        get
+        {
+            if (_animeManager != null)
+                return _animeManager;
+            else
+                return null;
+        }
+        set
+        {
+            _animeManager = value;
+        }
+    }
+    private SlotManager _slot;
+    public SlotManager slot
+    {
+        get
+        {
+            if (_slot != null)
+                return _slot;
+            else
+                return null;
+        }
+        set
+        {
+            _slot = value;
         }
     }
 
@@ -162,6 +208,16 @@ public class Player : MonoBehaviour {
     //Awake
     private void Awake()
     {
+        AO.player = this;
+        controller = GetComponent<Controller>();
+        animeManager = GameObject.Find("Player").GetComponent<AnimeManager>();
+        slot = GameObject.Find("Player").GetComponent<SlotManager>();
+
+        launcher = Instantiate(launcher, slot.laucherSlot.position, slot.laucherSlot.rotation);
+        launcher.gameObject.transform.parent = slot.laucherSlot;//Initialize as child of launcher slot
+        weapon = Instantiate(weapon, slot.weaponSlot.position, slot.weaponSlot.rotation);
+        weapon.gameObject.transform.parent = slot.weaponSlot;//Initialize as child of weapon slot
+
         lv = new Level(100);
         //gun = 
         ResetPlayer();
@@ -191,10 +247,10 @@ public class Player : MonoBehaviour {
         }
 
         if (sp > 0)
-            AO.controller.CanRun = true;
+            controller.CanRun = true;
         else
         {
-            AO.controller.CanRun = false;
+            controller.CanRun = false;
             inRunColdTime = true;
         }
 

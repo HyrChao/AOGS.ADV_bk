@@ -44,9 +44,9 @@ public class Launcher : MonoBehaviour {
         AO.player.weapon.gameObject.SetActive(false);
         Invoke("FireDone", coldTime);
 
-        this.transform.parent = AO.slot.laucherLaunchSlot;
-        this.transform.position = AO.slot.laucherLaunchSlot.position;
-        this.transform.rotation = AO.slot.laucherLaunchSlot.rotation;
+        this.transform.parent = AO.player.slot.laucherLaunchSlot;
+        this.transform.position = AO.player.slot.laucherLaunchSlot.position;
+        this.transform.rotation = AO.player.slot.laucherLaunchSlot.rotation;
 
         Rocket newRocket = Instantiate(rocket, rocketLaunchPos.position, Quaternion.Euler(0,0,90)) as Rocket;
         newRocket.GetComponent<Rigidbody>().AddForce(force*AO.player.FaceDirection);
@@ -62,9 +62,9 @@ public class Launcher : MonoBehaviour {
         AO.player.CanFire = true;
         AO.player.weapon.gameObject.SetActive(true);
 
-        this.transform.parent = AO.slot.laucherSlot;
-        this.transform.position = AO.slot.laucherSlot.position;
-        this.transform.rotation = AO.slot.laucherSlot.rotation;
+        this.transform.parent = AO.player.slot.laucherSlot;
+        this.transform.position = AO.player.slot.laucherSlot.position;
+        this.transform.rotation = AO.player.slot.laucherSlot.rotation;
     }
 
     private void Awake()
