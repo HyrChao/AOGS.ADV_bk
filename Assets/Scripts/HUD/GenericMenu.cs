@@ -7,11 +7,10 @@ using UnityEngine.UI;
 
 public class GenericMenu : MonoBehaviour
 {
+    public static MenuManager menuManager;  //窗口管理器(static)
     public static Menu currentMenu = Menu.None;
 
     public Menu tag = Menu.None; //便于Unity界面中更改
-    public static MenuManager menuManager;  //窗口管理器(static)
-
     public Menu nextWindow = Menu.None;              
     public Menu previousWindow = Menu.None;
 
@@ -95,12 +94,12 @@ public class GenericMenu : MonoBehaviour
 
     public void NextWindow()
     {
-        menuManager.Open((int)nextWindow - 1);
+        menuManager.Open(nextWindow);
     }
 
     public void PreviousWindow()
     {
-        menuManager.Open((int)previousWindow - 1);
+        menuManager.Open(previousWindow);
 
     }
 

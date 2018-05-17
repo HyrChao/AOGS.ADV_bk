@@ -91,6 +91,7 @@ public class GameoverMenu : GenericMenu
 
         //    //OnFocus();
         //}
+
         base.Update();
 
         if (Input.GetButtonDown("Horizontal"))
@@ -103,6 +104,7 @@ public class GameoverMenu : GenericMenu
             else
                 select--;
         }
+
         //if (Input.GetButtonDown("Attack"))
         //{
         //    select--;

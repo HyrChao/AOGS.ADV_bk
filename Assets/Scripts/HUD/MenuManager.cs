@@ -6,12 +6,15 @@ using UnityEngine;
 public class MenuManager : MonoBehaviour {
 
     public GenericMenu[] menu;          //窗口数组
-    public GenericMenu GetWindow(int value)
+    public GenericMenu GetWindow(Menu value)
     {
-        return menu[value];
+        for (int i=0; i<menu.Length; i++)
+            if(menu[i].tag == value)
+                return menu[i];
+        return null;
     }
 
-    public void ToggleWindowVisiblity(Menu value) //打开value编号的窗口，关闭其它窗口
+    public void Open(Menu value) //打开value编号的窗口，关闭其它窗口
     {
         var total = menu.Length;
         for (var i = 0; i < total; i++)
@@ -25,14 +28,8 @@ public class MenuManager : MonoBehaviour {
     }
 
     public Menu currentMenu = Menu.None;
-    public Menu defaultMenu = Menu.None;
-    public GenericMenu Open(Menu value)        //判断value范围是否正确并且打开窗口
-    {
-        currentMenu = GenericMenu.currentMenu;
-        ToggleWindowVisiblity(currentWindowID);
-        return GetWindow(currentWindowID);
 
-    }
+    public Menu defaultMenu = Menu.None;
 
     private void Awake()
     {
@@ -45,7 +42,7 @@ public class MenuManager : MonoBehaviour {
     void Start()
     {
         GenericMenu.menuManager = this;      //使每个继承GericWindows的窗口都有Manager   
-        Open(defaultWindowID);
+        Open(defaultMenu);
     }
 
 }

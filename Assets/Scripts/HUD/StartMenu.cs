@@ -29,7 +29,7 @@ public class StartMenu : GenericMenu {
 
     public void Option()
     {
-        menuManager.Open(1);
+        menuManager.Open(Menu.GameOver);
     }
 
     void Start () {
