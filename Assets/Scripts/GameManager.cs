@@ -36,6 +36,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //State
+    private bool canPause;
+
     private void Awake()
     {
         //Setup fps
@@ -85,15 +88,17 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("Begin");
     }
 
-    private void Pause()
+    public void Pause()
     {
         Time.timeScale = 0f;
         AO.hud.Hide();
+        AO.menu.Open(Menu.PauseMenu);
     }
 
-    private void Resume()
+    public void Resume()
     {
         Time.timeScale = 1.0f;
         AO.hud.Show();
+        AO.menu.Close();
     }
 }

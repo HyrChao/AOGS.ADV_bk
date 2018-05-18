@@ -9,27 +9,31 @@ public class MenuManager : MonoBehaviour {
     public GenericMenu GetWindow(Menu value)
     {
         for (int i=0; i<menu.Length; i++)
-            if(menu[i].tag == value)
+            if(menu[i].label == value)
                 return menu[i];
         return null;
     }
+    private GenericMenu currentMenu;
+    public Menu currentMenuLabel = Menu.None;
 
     public void Open(Menu value) //打开value编号的窗口，关闭其它窗口
     {
-        var total = menu.Length;
-        for (var i = 0; i < total; i++)
+        int total = menu.Length;
+        for (int i = 0; i < total; i++)
         {
-            GenericMenu window = menu[i];
-            if (window.tag == value)
-                window.Open();
-            else if (window.gameObject.activeSelf)
-                window.Close();
+            currentMenu = menu[i];
+            currentMenuLabel = value;
+            if (currentMenu.label == value)
+                currentMenu.Open();
+            else if (currentMenu.gameObject.activeSelf)
+                currentMenu.Close();
         }
     }
 
-    public Menu currentMenu = Menu.None;
-
-    public Menu defaultMenu = Menu.None;
+    public void Close()
+    {
+        currentMenu.Close();
+    }
 
     private void Awake()
     {
@@ -42,7 +46,18 @@ public class MenuManager : MonoBehaviour {
     void Start()
     {
         GenericMenu.menuManager = this;      //使每个继承GericWindows的窗口都有Manager   
-        Open(defaultMenu);
+        //Open(defaultMenu);
+    }
+
+    public void NextWindow()
+    {
+        Open(currentMenu.nextWindow);
+    }
+
+    public void PreviousWindow()
+    {
+        Open(currentMenu.previousWindow);
+
     }
 
 }

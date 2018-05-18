@@ -19,7 +19,7 @@ public class StartMenu : GenericMenu {
 
     public void Continue()
     {
-        NextWindow();
+        SceneManager.LoadScene("Scene1");      //到场景1
     }
 
     public void NewGame()

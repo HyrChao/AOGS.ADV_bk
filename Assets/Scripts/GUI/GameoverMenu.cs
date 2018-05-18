@@ -96,7 +96,7 @@ public class GameoverMenu : GenericMenu
 
         if (Input.GetButtonDown("Horizontal"))
         {
-            float axis = Input.GetAxis("Horizontal");
+            float axis = Input.GetAxisRaw("Horizontal");
             if (axis == 0)
                 return;
             if (axis > 0)
